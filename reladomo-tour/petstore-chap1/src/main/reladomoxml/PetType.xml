@@ -26,5 +26,4 @@
 
     <Attribute name="petTypeId" javaType="int" columnName="PET_TYPE_ID" primaryKey="true"/>
     <Attribute name="petType" javaType="String" columnName="PET_TYPE" nullable="false" maxLength="16"/>
-
 </MithraObject>

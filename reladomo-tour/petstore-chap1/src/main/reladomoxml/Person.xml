@@ -35,5 +35,4 @@
                   reverseRelationshipName="owner">
         this.personId = Pet.personId
     </Relationship>
-
 </MithraObject>

@@ -22,7 +22,8 @@
                 </mediaobject>
             </figure>
             <para>
-                We have three entities : <code>Person</code>, <code>Pet</code> and <code>PetType</code>. We start by defining the attributes of each entity and some metadata in a <code>MithraObject</code> XML file.
+                We have three entities : <code>Person</code>, <code>Pet</code> and <code>PetType</code>.
+                We start by defining the attributes of each entity and some metadata in a <code>MithraObject</code> XML file.
             </para>
 
             <para>
@@ -60,6 +61,7 @@
     <ClassName>PetType</ClassName>
     <DefaultTable>PET_TYPE</DefaultTable>
 
+    <Attribute name="petTypeId" javaType="int" columnName="PET_TYPE_ID" primaryKey="true"/>
     <Attribute name="petType" javaType="String" columnName="PET_TYPE" nullable="false" maxLength="16"/>
 </MithraObject>]]>
         </programlisting>
@@ -69,10 +71,18 @@
         <sect2>
             <title>Primary Keys</title>
             <para>
-                In Reladomo, each object requires a primary key. A primary key might be composed of a single attribute or multiple attributes. For the <code>PetType</code> object, the <code>petType</code> attribute (e.g "dog", "cat", "bird") is unique. So we simply include a <code>primaryKey</code> attribute.
+                In Reladomo, each object requires a primary key.
+                A primary key might be composed of a single attribute or multiple attributes.
+                For the <code>Person</code> object, the <code>personId</code> attribute is unique. So we simply include a <code>primaryKey</code> tag.
             </para>
-            <programlisting><![CDATA[<Attribute name="petType" javaType="String" columnName="PET_TYPE" nullable="false" maxLength="16" primaryKey=true />]]>
+            <programlisting><![CDATA[<Attribute name="personId" javaType="int" columnName="PERSON_ID" primaryKey="true"/>]]>
             </programlisting>
+            <para>
+                A primary key can also be composed of multiple attributes. If full name (first name and last name) of a <code>Person</code> where unique,
+                we can create a primary key by adding the <code>primaryKey</code> attribute to both these attributes.
+            </para>
+            <programlisting><![CDATA[<Attribute name="firstName" javaType="String" columnName="FIRST_NAME" maxLength="16" primaryKey="true"/>
+    <Attribute name="lastName" javaType="String" columnName="LAST_NAME" maxLength="24" primaryKey="true"/>]]></programlisting>
             <para>
                 In some cases, a natural primary key does not exist. We can ask Reladomo to generate a primary key by using the <code>primaryKeyGeneratorStrategy</code>. Primary key generation is discussed in a later chapter.
             </para>
@@ -183,7 +193,8 @@
     <sect1>
         <title>Code Generation</title>
         <para>
-            To generate classes, Reladomo has to be told about the <code>MithraObject</code>s that it should generate code for. This is done via a <code>MithraClassList</code>.
+            To generate classes, Reladomo has to be told about the <code>MithraObject</code>s that it should generate code for.
+            This is done via a <code>MithraClassList</code>.
         </para>
         <para>
             <emphasis role="bold">PetstoreClassList.xml:</emphasis>
