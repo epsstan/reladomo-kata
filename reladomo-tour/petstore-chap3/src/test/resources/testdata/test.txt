@@ -1,0 +1,17 @@
+class petstore.ch3.domain.PetType
+petTypeId, petType
+1, "dog"
+2, "cat"
+3, "bird"
+
+class petstore.ch3.domain.Person
+personId, firstName, lastName
+1, "joe", "smith"
+2, "minnie", "mouse"
+3, "mickey", "mouse"
+
+class petstore.ch3.domain.Pet
+petName, personId, petAge, petTypeId
+"fluffy", 1, 2, 1
+"diamond", 2, 3, 2
+"charlie", 3, 10, 3

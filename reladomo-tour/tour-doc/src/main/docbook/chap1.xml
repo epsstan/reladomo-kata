@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+
+<chapter label="1">
+    <sect1>
+            <title>Introduction</title>
+            <para>This chapter introduces domain modeling in Reladomo. We start with a simple application, build it's domain model and generate classes and DDL statements off of the domain model.</para>
+    </sect1>
+    <sect1>
+        <title>Domain Model</title>
+            <para>
+                A domain model represents the various entities in a system and their relationships. Consider a Pet store application. A simple domain model of this application can be expressed in UML as follows.
+            </para> 
+            <figure id="domainmodel.fig">
+                <title>Domain Model</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="figure1.gif" format="gif"/>
+                    </imageobject>
+                    <textobject>
+                        <phrase>Pet Store Domain Model</phrase>
+                    </textobject>
+                </mediaobject>
+            </figure>
+            <para>
+                We have three entities : <code>Person</code>, <code>Pet</code> and <code>PetType</code>. We start by defining the attributes of each entity and some metadata in a <code>MithraObject</code> XML file.
+            </para>
+
+            <para>
+                <emphasis role="bold">Person.xml:</emphasis>
+            </para>
+            <programlisting language="xml"><![CDATA[<MithraObject objectType="transactional">
+    <PackageName>petstore.ch1.domain</PackageName>
+    <ClassName>Person</ClassName>
+    <DefaultTable>PERSON</DefaultTable>
+
+    <Attribute name="personId" javaType="int" columnName="PERSON_ID" primaryKey="true"/>
+    <Attribute name="firstName" javaType="String" columnName="FIRST_NAME" maxLength="16"/>
+    <Attribute name="lastName" javaType="String" columnName="LAST_NAME" maxLength="24"/>
+</MithraObject>]]>
+        </programlisting>
+        <para>
+            <emphasis role="bold">Pet.xml:</emphasis>
+        </para>
+            <programlisting language="xml"><![CDATA[<MithraObject objectType="transactional">
+    <PackageName>petstore.ch1.domain</PackageName>
+    <ClassName>Pet</ClassName>
+    <DefaultTable>PET</DefaultTable>
+
+    <Attribute name="petName" javaType="String" columnName="PET_NAME" primaryKey="true" maxLength="16"/>
+    <Attribute name="personId" javaType="int" columnName="PERSON_ID" nullable="false"/>
+    <Attribute name="petAge" javaType="int" columnName="PET_AGE" nullable="false"/>
+    <Attribute name="petType" javaType="int" columnName="PET_TYPE" nullable="false"/>
+</MithraObject>]]>
+        </programlisting>
+        <para>
+            <emphasis role="bold">PetType.xml:</emphasis>
+        </para>
+            <programlisting language="xml"><![CDATA[<MithraObject objectType="transactional">
+    <PackageName>petstore.ch1.domain</PackageName>
+    <ClassName>PetType</ClassName>
+    <DefaultTable>PET_TYPE</DefaultTable>
+
+    <Attribute name="petType" javaType="String" columnName="PET_TYPE" nullable="false" maxLength="16"/>
+</MithraObject>]]>
+        </programlisting>
+        <para>
+            These XML files contain metadata that allows Reladomo to map entities to Java classes (e.g. <code>ClassName</code>, <code>javaType</code>) and to database tables (e.g. <code>DefaultTable</code>, <code>columName</code>). The XML schema definition (mithraobject.xsd) explains the various components in detail.
+        </para>
+        <sect2>
+            <title>Primary Keys</title>
+            <para>
+                In Reladomo, each object requires a primary key. A primary key might be composed of a single attribute or multiple attributes. For the <code>PetType</code> object, the <code>petType</code> attribute (e.g "dog", "cat", "bird") is unique. So we simply include a <code>primaryKey</code> attribute.
+            </para>
+            <programlisting><![CDATA[<Attribute name="petType" javaType="String" columnName="PET_TYPE" nullable="false" maxLength="16" primaryKey=true />]]>
+            </programlisting>
+            <para>
+                In some cases, a natural primary key does not exist. We can ask Reladomo to generate a primary key by using the <code>primaryKeyGeneratorStrategy</code>. Primary key generation is discussed in a later chapter.
+            </para>
+        </sect2>
+        <sect2>
+            <title>Relationships</title>
+            <para>
+                In the Pet store, there are two relationships. A <code>Person</code> can have many <code>Pet</code>s and many <code>Pet</code>s are of the same <code>PetType</code>. These relationships are described using the <code>Relationship</code> tag.
+            </para>
+            <programlisting><![CDATA[<Relationship name="pets"
+    relatedObject="Pet"
+    cardinality="one-to-many"
+    relatedIsDependent="true">
+        this.personId = Pet.personId
+    </Relationship>
+]]>
+            </programlisting>
+            <para>
+                The relationship definition contains the expression that relates the two objects. In this case <code>Person</code> and <code>Pet</code> are related by the <code>personId</code> attribute. The relationship also influences Reladomo's code generation. In particular, the <code>Person</code> class will have a <code>getPets</code> method. This is because the <code>name</code> of the relationship is <code>pets</code>.
+            </para>
+
+            <para>
+                Sometimes it is desirable to navigate relationships in the reverse direction. e.g. given a <code>Pet</code> navigate to the <code>Person</code> that owns it. This can be implemented by adding another <code>Relationship</code> in the XML for Pet linking it to Person. A better approach is to use a single <code>Realtionship</code> in Person, but add the <code>reverseRelationshipName</code> attribute.
+            </para>
+            <programlisting><![CDATA[<Relationship name="pets"
+    relatedObject="Pet"
+    cardinality="one-to-many"
+    relatedIsDependent="true"
+    reverseRelationshipName="owner">
+        this.personId = Pet.personId
+    </Relationship>
+]]>
+            </programlisting>    
+            <para>
+                Using the <code>reverseRelationshipName</code> attribute provides the benefit of a single definition but with the code generated for both the classes.
+            </para>        
+        </sect2>
+        <sect2>
+            <title>Putting it all together</title>
+            <para>
+                Here is the full listing of all the <code>MithraObject</code>s along with primary keys and relationships.
+            </para>
+            <programlisting language="xml"><![CDATA[<MithraObject objectType="transactional"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="mithraobject.xsd">
+
+    <PackageName>petstore.ch1.domain</PackageName>
+    <ClassName>Person</ClassName>
+    <DefaultTable>PERSON</DefaultTable>
+
+    <Attribute name="personId" javaType="int" columnName="PERSON_ID" primaryKey="true"/>
+    <Attribute name="firstName" javaType="String" columnName="FIRST_NAME" maxLength="16"/>
+    <Attribute name="lastName" javaType="String" columnName="LAST_NAME" maxLength="24"/>
+
+    <Relationship name="pets"
+        relatedObject="Pet"
+        cardinality="one-to-many"
+        relatedIsDependent="true"
+        reverseRelationshipName="owner">
+        this.personId = Pet.personId
+    </Relationship>
+
+</MithraObject>]]>
+            </programlisting>
+            <para>
+                <emphasis role="bold">Pet.xml:</emphasis>
+            </para>
+            <programlisting language="xml"><![CDATA[<MithraObject objectType="transactional"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="mithraobject.xsd">
+
+    <PackageName>petstore.ch1.domain</PackageName>
+    <ClassName>Pet</ClassName>
+    <DefaultTable>PET</DefaultTable>
+
+    <Attribute name="petName" javaType="String" columnName="PET_NAME" primaryKey="true" maxLength="16"/>
+    <Attribute name="personId" javaType="int" columnName="PERSON_ID" nullable="false"/>
+    <Attribute name="petAge" javaType="int" columnName="PET_AGE" nullable="false"/>
+    <Attribute name="petType" javaType="int" columnName="PET_TYPE" nullable="false"/>
+
+    <Relationship name="petType"
+        relatedObject="PetType"
+        cardinality="many-to-one">
+        this.petType = PetType.petType
+    </Relationship>
+
+</MithraObject>
+]]>
+            </programlisting>
+            <para>
+                <emphasis role="bold">PetType.xml:</emphasis>
+            </para>
+            <programlisting language="xml"><![CDATA[<MithraObject objectType="transactional"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="mithraobject.xsd">
+
+    <PackageName>petstore.ch1.domain</PackageName>
+    <ClassName>PetType</ClassName>
+    <DefaultTable>PET_TYPE</DefaultTable>
+
+    <Attribute name="petType" javaType="String" columnName="PET_TYPE" nullable="false" maxLength="16"/>
+
+</MithraObject>
+]]>
+            </programlisting>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Code Generation</title>
+        <para>
+            To generate classes, Reladomo has to be told about the <code>MithraObject</code>s that it should generate code for. This is done via a <code>MithraClassList</code>.
+        </para>
+        <para>
+            <emphasis role="bold">PetstoreClassList.xml:</emphasis>
+        </para>        
+        <programlisting><![CDATA[<Mithra>
+    <MithraObjectResource name="Person"/>
+    <MithraObjectResource name="Pet" />
+    <MithraObjectResource name="PetType"/>
+</Mithra>]]>            
+        </programlisting>
+        <para>
+            With the class list created, we can generate classes by invoking an Ant task with the class list as input. Here is a snippet showing the Ant task being invoked from Maven.
+        </para>
+        <programlisting><![CDATA[<taskdef name="gen-reladomo" classpath="plugin_classpath" classname="com.gs.fw.common.mithra.generator.MithraGenerator"/>
+<gen-reladomo 
+    xml="${project.basedir}/src/main/reladomoxml/PetstoreClassList.xml"
+    generateGscListMethod="true"
+    generatedDir="${project.build.directory}/generated-sources/reladomo"
+    nonGeneratedDir="${project.basedir}/src/main/java"/>
+]]>
+        </programlisting>
+        <para>
+            The code generator generates two sets of classes. These are sent to different source directores via the <code>generatedDir</code> and <code>nonGeneratedDir</code> attributes. The classes in <code>generatedDir</code> are Reladomo framework classes which are always generated. (i.e on every run of the code generator). These should never be committed to a version control system.
+        </para>
+        <para>
+            The classes under <code>nonGeneratedDir</code> are the main domain classes. Your business logic can be added to these classes and they can be committed to a version control system. Because you could have custom business logic in these classes, the code generator will not re-generate these classes if they already exist in the target directory.
+        </para>
+        <figure id="petstore_generated_classes.fig">
+                <title>Pet Store Generated Classes</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="petstore_generated_classes.gif" format="gif"/>
+                    </imageobject>
+                    <textobject>
+                        <phrase>Pet Store Generated Classes</phrase>
+                    </textobject>
+                </mediaobject>
+        </figure>
+    </sect1>
+    <sect1>
+        <title>Database Definition Generation</title>
+        <para>
+            Reladomo not only generates Java classes but can also generate DDL statements for bootstrapping the application database.
+            These include scripts to create tables, indices and foreign keys. DDL generation is an optional feature of Reladomo. You can always choose to manually create database tables that map to the various <code>MithraObject</code>s.
+        </para>
+            <para>
+                Similar to code generation, the DDL generator is invoked with the <code>MithraClassList</code> containing the
+                <code>MithraObject</code>s for which you want DDLs generated. It also has to be told the type of database for which DDLs have to be generated.
+            </para>
+            <para>Here is a snippet showing the DDL generator Ant task being invoked from Maven.</para>
+            <programlisting><![CDATA[<tasks>
+    <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+    <taskdef name="gen-reladomo-db" classpath="plugin_classpath" classname="com.gs.fw.common.mithra.generator.dbgenerator.MithraDbDefinitionGenerator"/>
+    <gen-reladomo-db
+        xml="${project.basedir}/src/main/reladomoxml/PetstoreClassList.xml"
+        generatedDir="${project.build.directory}/generated-resources/db"
+        databaseType="UDB82"/>
+</tasks>
+]]>
+            </programlisting>
+        <para>
+            Running the DDL generator, produces the following files. <code>.ddl</code> files contain the create table statements. <code>.idx</code> and <code>.fk</code> files
+            contain the statements for creating indices and foreign keys.
+        </para>
+        <note>
+            <title>Optimal DDLs</title>
+            <para>
+                The DDLs generated by Reladomo are not meant to be used as is. They are merely meant to be a starting point for further customization.
+                There are two common reasons to customize the generated DDLs. One is to add database specific clauses for specifying table spaces, schemas etc.
+                Another is to add additional indices based on usage patterns seen in the application.
+            </para>
+        </note>
+    </sect1>
+    <sect1>
+        <title>Sample Code</title>
+        <para>All the code discussed in this chapter is found in the <code>petstore-chap1</code> Maven module.</para>
+    </sect1>
+</chapter>

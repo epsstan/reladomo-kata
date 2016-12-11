@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+  <taskdef classname="com.gs.fw.common.mithra.generator.dbgenerator.MithraDbDefinitionGenerator" classpath="plugin_classpath" name="gen-reladomo-db"/>
+  <gen-reladomo-db databaseType="UDB82" xml="/Users/stanle/github_ws/reladomo-tour/petstore-chap1/src/main/reladomoxml/PetstoreClassList.xml" generatedDir="/Users/stanle/github_ws/reladomo-tour/petstore-chap1/target/generated-resources/db"/>
+</target>
+</project>

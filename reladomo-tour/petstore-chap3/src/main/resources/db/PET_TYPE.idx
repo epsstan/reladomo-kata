@@ -1,0 +1,2 @@
+alter table PET_TYPE add constraint PET_TYPE_PK primary key (PET_TYPE_ID);
+
