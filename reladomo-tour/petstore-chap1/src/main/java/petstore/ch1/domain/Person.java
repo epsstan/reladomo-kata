@@ -1,5 +1,4 @@
 package petstore.ch1.domain;
-import java.sql.Timestamp;
 /********************************************************************************
 * File        : $Source:  $
 * Version     : $Revision:  $

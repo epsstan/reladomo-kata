@@ -14,7 +14,7 @@
                 <title>Domain Model</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="figure1.gif" format="gif"/>
+                        <imagedata fileref="chap1/Petstore_ClassDiagram.png" scale="75"/>
                     </imageobject>
                     <textobject>
                         <phrase>Pet Store Domain Model</phrase>
@@ -97,9 +97,8 @@
     cardinality="one-to-many"
     relatedIsDependent="true">
         this.personId = Pet.personId
-    </Relationship>
-]]>
-            </programlisting>
+</Relationship>
+]]>        </programlisting>
             <para>
                 The relationship definition contains the expression that relates the two objects. In this case <code>Person</code> and <code>Pet</code> are related by the <code>personId</code> attribute. The relationship also influences Reladomo's code generation. In particular, the <code>Person</code> class will have a <code>getPets</code> method. This is because the <code>name</code> of the relationship is <code>pets</code>.
             </para>
@@ -113,9 +112,8 @@
     relatedIsDependent="true"
     reverseRelationshipName="owner">
         this.personId = Pet.personId
-    </Relationship>
-]]>
-            </programlisting>    
+</Relationship>
+]]>         </programlisting>
             <para>
                 Using the <code>reverseRelationshipName</code> attribute provides the benefit of a single definition but with the code generated for both the classes.
             </para>        
@@ -214,25 +212,69 @@
     generateGscListMethod="true"
     generatedDir="${project.build.directory}/generated-sources/reladomo"
     nonGeneratedDir="${project.basedir}/src/main/java"/>
-]]>
-        </programlisting>
+]]></programlisting>
         <para>
-            The code generator generates two sets of classes. These are sent to different source directores via the <code>generatedDir</code> and <code>nonGeneratedDir</code> attributes. The classes in <code>generatedDir</code> are Reladomo framework classes which are always generated. (i.e on every run of the code generator). These should never be committed to a version control system.
+            The code generator generates two sets of classes.
+            These are sent to different source directores via the <code>generatedDir</code> and <code>nonGeneratedDir</code>
+            attributes. The classes in <code>generatedDir</code> (below figure on the left) are Reladomo framework classes which are always generated. (i.e on every run of the code generator).
+            These should never be committed to a version control system.
         </para>
         <para>
-            The classes under <code>nonGeneratedDir</code> are the main domain classes. Your business logic can be added to these classes and they can be committed to a version control system. Because you could have custom business logic in these classes, the code generator will not re-generate these classes if they already exist in the target directory.
+            The classes under <code>nonGeneratedDir</code> (below figure on the right) are the main domain classes.
+            Your business logic can be added to these classes and they can be committed to a version control system.
+            Because you could have custom business logic in these classes, the code generator will not re-generate these classes if they already exist in the target directory.
         </para>
-        <figure id="petstore_generated_classes.fig">
-                <title>Pet Store Generated Classes</title>
-                <mediaobject>
+        <para>
+            <inlinemediaobject>
                     <imageobject>
-                        <imagedata fileref="petstore_generated_classes.gif" format="gif"/>
+                        <imagedata scale="50" fileref="chap1/Petstore_generated1.png"/>
                     </imageobject>
-                    <textobject>
-                        <phrase>Pet Store Generated Classes</phrase>
-                    </textobject>
-                </mediaobject>
-        </figure>
+            </inlinemediaobject>
+            <inlinemediaobject>
+                    <imageobject>
+                        <imagedata scale="50" fileref="chap1/Petstore_generated2.png"/>
+                    </imageobject>
+            </inlinemediaobject>
+            <!--
+            <table frame="none">
+                <title>Reladomo Generated Classes</title>
+                <tgroup cols='2' align='left' colsep='0' rowsep='0'>
+                    <colspec colname='c1'/>
+                    <colspec colname='c2'/>
+                    <thead>
+                        <row>
+                            <entry>Non generated classes</entry>
+                            <entry>Generated classes</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata scale="50" fileref="Petstore_generated1.png"/>
+                                    </imageobject>
+                                    <textobject>
+                                        <phrase>Pet Store Domain Model</phrase>
+                                    </textobject>
+                                </mediaobject>
+                            </entry>
+                            <entry>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata scale="50" fileref="Petstore_generated2.png"/>
+                                    </imageobject>
+                                    <textobject>
+                                        <phrase>Pet Store Domain Model</phrase>
+                                    </textobject>
+                                </mediaobject>
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            -->
+        </para>
     </sect1>
     <sect1>
         <title>Database Definition Generation</title>
@@ -240,12 +282,12 @@
             Reladomo not only generates Java classes but can also generate DDL statements for bootstrapping the application database.
             These include scripts to create tables, indices and foreign keys. DDL generation is an optional feature of Reladomo. You can always choose to manually create database tables that map to the various <code>MithraObject</code>s.
         </para>
-            <para>
-                Similar to code generation, the DDL generator is invoked with the <code>MithraClassList</code> containing the
-                <code>MithraObject</code>s for which you want DDLs generated. It also has to be told the type of database for which DDLs have to be generated.
-            </para>
-            <para>Here is a snippet showing the DDL generator Ant task being invoked from Maven.</para>
-            <programlisting><![CDATA[<tasks>
+        <para>
+            Similar to code generation, the DDL generator is invoked with the <code>MithraClassList</code> containing the
+            <code>MithraObject</code>s for which you want DDLs generated. It also has to be told the type of database for which DDLs have to be generated.
+        </para>
+        <para>Here is a snippet showing the DDL generator Ant task being invoked from Maven.</para>
+        <programlisting><![CDATA[<tasks>
     <property name="plugin_classpath" refid="maven.plugin.classpath"/>
     <taskdef name="gen-reladomo-db" classpath="plugin_classpath" classname="com.gs.fw.common.mithra.generator.dbgenerator.MithraDbDefinitionGenerator"/>
     <gen-reladomo-db
@@ -253,12 +295,22 @@
         generatedDir="${project.build.directory}/generated-resources/db"
         databaseType="UDB82"/>
 </tasks>
-]]>
-            </programlisting>
+]]>     </programlisting>
         <para>
             Running the DDL generator, produces the following files. <code>.ddl</code> files contain the create table statements. <code>.idx</code> and <code>.fk</code> files
             contain the statements for creating indices and foreign keys.
         </para>
+        <figure id="ddl.fig">
+            <title>Domain Model</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="chap1/Petstore_generatedddl.png" scale="50"/>
+                </imageobject>
+                <textobject>
+                    <phrase>Pet Store Generated DDL</phrase>
+                </textobject>
+            </mediaobject>
+        </figure>
         <note>
             <title>Optimal DDLs</title>
             <para>
