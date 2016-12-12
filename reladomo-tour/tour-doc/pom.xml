@@ -67,10 +67,7 @@
                             <!-- Use   so we can break the book into one file per chapter. -->
                             <xincludeSupported>true</xincludeSupported>
 
-                            <!-- I use a custom CSS file called sd.css. This is added to the XHTML output (i.e. in addition to docbook.css) -->
-                            <!--
-                            <htmlStylesheet>sd.css</htmlStylesheet>
-                            -->
+                            <htmlStylesheet>mithradoc.css</htmlStylesheet>
 
                             <!-- My preferences for labeling (i.e. numbering) chapters and sections. This is probably what you expect too. -->
                             <chapterAutolabel>true</chapterAutolabel>

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <chapter label="2">
+    <title>Wiring A Reladomo Application</title>
     <sect1>
             <title>Introduction</title>
             <para>This chapter demonstrates how to initialize Reladomo in an application.</para>

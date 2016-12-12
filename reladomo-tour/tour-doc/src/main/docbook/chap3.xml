@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <chapter label="3">
+    <title>CRUD Operations</title>
     <sect1>
         <title>Introduction</title>
         <para>This chapter demonstrates basic CRUD (Create, Read, Update, Delete) operations using Reladomo.</para>

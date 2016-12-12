@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <chapter label="1">
+    <title>Domain Modeling And Code Generation</title>
     <sect1>
             <title>Introduction</title>
             <para>This chapter introduces domain modeling in Reladomo. We start with a simple application, build it's domain model and generate classes and DDL statements off of the domain model.</para>
