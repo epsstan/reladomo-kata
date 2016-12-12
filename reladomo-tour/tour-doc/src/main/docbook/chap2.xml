@@ -3,7 +3,7 @@
 <chapter label="2">
     <sect1>
             <title>Introduction</title>
-            <para>This chapter demonstrates how to wire a Reladomo application.</para>
+            <para>This chapter demonstrates how to initialize Reladomo in an application.</para>
     </sect1>
     <sect1>
         <title>Connection Manager</title>
@@ -15,11 +15,11 @@
             <title>Sourceless Connection Manager</title>
             <para>
                 The <code>SourceLessConnectionManager</code> is used when all Reladomo objects are persisted in a single database.
-                In other words, if all objects come from a single source database, a <code>SourceLessConnectionManager</code> is used.
+                In other words, if all objects come from a single source database, use a <code>SourceLessConnectionManager</code>.
             </para>
             <para>
                 The snippet below shows a simple implementation that uses a direct host/port connection to the database.
-                It also uses a Reladomo utility <code>XAConnectionManager</code> class to acquire a transactional database connection.
+                It also uses a Reladomo utility class, <code>XAConnectionManager</code> to acquire a transactional database connection.
             </para>
             <programlisting language="java"><![CDATA[public class PetstoreConnectionManager implements SourcelessConnectionManager
 {
@@ -84,12 +84,12 @@
     </sect1>
     <sect1>
         <title>Runtime Configuration</title>
-        <para>
-            Reladomo's runtime is configured via a <code>MithraRuntime</code> XML file. This is similar to the <code>Mithra</code> class list in that it lists all the <code>MithraObject</code> that
-            are being used by the application. It is different in that it specifies runtime concerns such as connection management and caching.
+        <para>.
+            Reladomo's runtime is configured via a <code>MithraRuntime</code> XML file. This is similar to the <code>MithraClassList</code> in that it lists all the <code>MithraObject</code>s that
+            are being used by the application. It is different in that it specifies runtime concerns such as connection management and caching. The connection manager class to be used is indicated via the <code>ConnectionManager</code> XML tag.
         </para>
         <para>
-            The following snippet shows a runtime configuration where all the objects are partially cached. This means that Reladomo will cache an object as long as there is sufficient memory. When there is a memory cruch, the cached objects will be garbage collected.
+            The following snippet shows a runtime configuration where all the objects are partially cached. This means that Reladomo will cache an object as long as there is sufficient memory. When there is a memory crunch, the cached objects will be garbage collected.
         </para>
         <programlisting language="xml"><![CDATA[<MithraRuntime>
     <ConnectionManager className="petstore.ch2.util.PetstoreConnectionManager">
@@ -137,7 +137,7 @@
 }]]>
         </programlisting>
         <para>
-            This simple app does not do anything useful other than initializing Reladomo. In the next chapter, we will extend this application to build a simple REST API for the Petstore.
+            This simple application does not do anything useful other than initializing Reladomo. In the next chapter, we will extend this application to build a simple REST API for the Petstore.
         </para>
     </sect1>
     <sect1>
