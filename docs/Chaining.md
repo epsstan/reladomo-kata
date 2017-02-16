@@ -34,7 +34,7 @@ Since bitemporal chaining is being used, each row in the table has four timestam
 The table looks as follows. (The 'Row Number' column is included just to make it easy to refer to rows in this document. It is not actually part of the table schema.)
 
 | Account # | Balance | FROM_Z        | THRU_Z        | IN_Z          | OUT_Z         | Row Number |
-| --        | --      | --            | --            | --            | --            | --         |
+| ---       | ---     | ---           | ---           | ---           | ---           | ---        |
 | ACC1      | 0       | 2017/1/1 9 AM | 9999/1/1 9 AM | 2017/1/1 9 AM | 9999/1/1 9 AM | 1          |
 
 * The Account # and Balance columns are straightforward
