@@ -98,17 +98,19 @@ Because of a software bug the ATM does not send your deposit to the bank. While 
 
 Five days later on 2017/1/17, you check your bank account online and realize the mistake. Your account is short by $50. Furious, you call the bank to complain. They are vey apologetic and agree to adjust your balance.
 
-Just as before, the bank wants to preserve history in both dimensions. They follow the same approach to update the database :
+Just as before, the bank wants to preserve history in both dimensions. They follow the same approach :
 * Invalidate rows whose view of the world is incorrect
 * Add new rows to reflect the new view of the world
 
 **Invalidate rows** 
 
-All the existing rows are invalid along the processing time dimension. However, we want to preserve the fact that they are invalid. So we invalidate them by setting their OUT_Z to today (2017/1/17).
+Row 1 is already invalid. It does not need to be updated.
+
+Rows 2 and 3 are invalid along the processing time dimension. However, we want to preserve the fact that they are invalid. So we invalidate them by setting their OUT_Z to today (2017/1/17).
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
-| ACC1      | 100      | 2017/1/1 | 9999/1/1 | 2017/1/1 | 2017/1/17 | 1 |
+| ACC1      | 100      | 2017/1/1 | 9999/1/1 | 2017/1/1 | 2017/1/2 | 1 |
 | ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/2 | 2017/1/17 | 2 |
 | ACC1      | 300      | 2017/1/2 | 9999/1/1 | 2017/1/2 | 2017/1/17 | 3 |
 
@@ -123,9 +125,9 @@ Since we are adding these rows today (2017/1/17), the IN_Z of these newly added 
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
-| ACC1      | 100      | 2017/1/1 | 9999/1/1 | 2017/1/1 | 2017/1/17 | 1 |
+| ACC1      | 100      | 2017/1/1 | 9999/1/1 | 2017/1/1 | 2017/1/2 | 1 |
 | ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/2 | 2017/1/17 | 2 |
 | ACC1      | 300      | 2017/1/2 | 9999/1/1 | 2017/1/2 | 2017/1/17 | 3 |
 | ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/17 | 9999/1/1 | 4 |
 | ACC1      | 300      | 2017/1/2 | 2017/1/12 | 2017/1/17 | 9999/1/1 | 5 |
-| ACC1      | 350      | 2017/1/12 | 9999/1/1 | 2017/1/17| 9999/1/1 | 6 |
+| ACC1      | 350      | 2017/1/12 | 9999/1/1 | 2017/1/17| 9999/1/1 | 6 | 
