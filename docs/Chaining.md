@@ -38,12 +38,14 @@ The table looks as follows.
 | ACC1      | 0       | 2017/1/1 | 9999/1/1 | 2017/1/1 | 9999/1/1 | 1 |
 
 > For simplicity, this example will use dates instead of timestamps
+
 > The 'Row Number' column provides an easy way to refer to rows in this document. It is not part of the table schema.
+
 > 9999/1/1 is used as a magic timestamp to indicate infinity
 
 Row 1 records the following facts 
-* The account was created on 2017/1/1 (processing time). This fact is true for the forseeable future. So FROM_Z = 2017/1/1, THRU_Z = Infinity
-* The acccount was added to the database today (transaction time). This change is valid for the foreseeable future. So IN_Z = 2017/1/1, IN_Z = Infinity
+* The account was created on today (2017/1/1). This fact is true for the forseeable future. So FROM_Z = 2017/1/1, THRU_Z = Infinity
+* The acccount was added to the database today (2017/1/1). This change is valid for the foreseeable future. So IN_Z = 2017/1/1, OUT_Z = Infinity
 
 ## Day 2 - Deposit $100
 
@@ -54,18 +56,17 @@ The next day, on 2017/1/2 you deposit $100 at one of the ATMs.
 The goal of bitemporal milestoning is to track changes along both dimensions. So we cannot simply update the balance in Row 1. 
 
 We start by adding Row 2 which records two facts  
-* From 2017/1/1 to 2017/1/2 the account had a balance of $0. So FROM_Z = 2017/1/1, THRU_Z=2017/1/2
-* Row 2 was added to the database on 2017/1/2. This change is valid for the foreseeable future. So IN_Z = 2017/1/2, OUT_Z = Infinity
+* From yesterday (2017/1/1) to today (2017/1/2) the account had a balance of $0. So FROM_Z = 2017/1/1, THRU_Z=2017/1/2
+* Row 2 was added to the database today (2017/1/2). This change is valid for the foreseeable future. So IN_Z = 2017/1/2, OUT_Z = Infinity
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
 | ACC1      | 0       | 2017/1/1 | 9999/1/1 | 2017/1/1 | 9999/1/1 | 1 |
 | ACC1      | 0       | 2017/1/1 | 2017/1/2 | 2017/1/2 | 9999/1/1 | 2 |
 
-
 We then add Row 3 which records two facts as well
-* Sarting from 2017/1/2 the account has a new balance of $10. This is true for the foreseeable future. So FROM_Z = 2017/1/2, THRU_Z = Infinity
-* Row 3 was added to the database on 2017/1/2. This change is valid for the forseeable future. So IN_Z = 2017/1/2, OUT_Z = Infinity
+* Starting today (2017/1/2) the account has a balance of $10. This is true for the foreseeable future. So FROM_Z = 2017/1/2, THRU_Z = Infinity
+* Row 3 was added to the database today (2017/1/2). This change is valid for the forseeable future. So IN_Z = 2017/1/2, OUT_Z = Infinity
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
