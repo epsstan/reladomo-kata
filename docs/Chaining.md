@@ -74,7 +74,9 @@ We then add Row 3 which records two facts as well
 | ACC1      | 0       | 2017/1/1 | 2017/1/2 | 2017/1/2 | 9999/1/1 | 2 |
 | ACC1      | 10      | 2017/1/2 | 9999/1/2 | 2017/1/2 | 9999/1/1 | 3 |
 
-Now, Row 1 contradicts Row 2. Row 1 states the balance was $0 from 2017/1/1 to Infinity, whereas Row 2 states the balance was $10 from 2017/1/1 to 2017/1/2. So we fix Row 1 to indicate that it is no longer valid by updating it's OUT_Z to the current timestamp of 2017/1/2.
+Now, Row 1 contradicts Row 2. Row 1 states the balance was $0 from 2017/1/1 to Infinity, whereas Row 2 states the balance was $0 from only 2017/1/1 to 2017/1/2. So we fix Row 1 to indicate that it is no longer valid by updating it's OUT_Z to the current timestamp of 2017/1/2.
+
+> The key idea here is that we do not **delete rows**. We only mutate the timestamp columns as needed
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
