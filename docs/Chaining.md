@@ -8,8 +8,8 @@ All of this is very frustrating. But the bank happily adjusts your balance every
 
 However, the bank has a new problem (on top of the ATMs being buggy). They have been manually adjusting 
 the balance so many times, that they are completely unable to reason about your account's history. In particular 
-(a) they do not have a way of determining what **they thought** the balance was at a point in time AND
-(b) they do not have a way to track when your bank balance was adjusted
+* they do not have a way of determining what **they thought** the balance was at a point in time AND
+* they do not have a way to track when your bank balance was adjusted
 
 Lucikly, they have learnt about bitemporal chaining that will help them fix these problems. 
 
