@@ -24,7 +24,7 @@ While these two times are often the same, they can be different. Consider the fo
 
 ## Day 1 - Open an account 
 
-On 2017/1/1 you open a new bank account with a balance of $0. The bank updates it's database (table) with an entry for your account.
+On 2017/1/1 you open a new bank account with a balance of $100. The bank updates it's database (table) with an entry for your account.
 
 Since bitemporal chaining is being used, each row in the table has four timestamp columns :
 * FROM_Z and THRU_Z track the validity of the row along the processing time dimension
@@ -35,7 +35,7 @@ The table looks as follows.
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
-| ACC1      | 0       | 2017/1/1 | 9999/1/1 | 2017/1/1 | 9999/1/1 | 1 |
+| ACC1      | 100      | 2017/1/1 | 9999/1/1 | 2017/1/1 | 9999/1/1 | 1 |
 
 > For simplicity, this example will use dates instead of timestamps
 
@@ -47,46 +47,85 @@ Row 1 records the following facts
 * The account was created on today (2017/1/1). This fact is true for the forseeable future. So FROM_Z = 2017/1/1, THRU_Z = Infinity
 * The acccount was added to the database today (2017/1/1). This change is valid for the foreseeable future. So IN_Z = 2017/1/1, OUT_Z = Infinity
 
-## Day 2 - Deposit $100
+## Day 2 - Deposit $200
 
-The next day, on 2017/1/2 you deposit $100 at one of the ATMs.
+The next day, on 2017/1/2 you deposit $200 at one of the ATMs.
 
-> But the ATM is buggy! Instead of updating your balance with $100, it updates it with just $10!!
+The goal of bitemporal milestoning is to track changes along both dimensions. So the bank cannot simply update the balance in Row 1. They cannot delete Row 1 and insert a new row either as that loses history.
 
-The goal of bitemporal milestoning is to track changes along both dimensions. So we cannot simply update the balance in Row 1. 
+In general, making changes to a bitemporally chained database is a two step process :
+* Invalidate rows whose view of the world is incorrect
+* Add new rows to reflect the new view of the world
 
-We start by adding Row 2 which records two facts  
-* From yesterday (2017/1/1) to today (2017/1/2) the account had a balance of $0. So FROM_Z = 2017/1/1, THRU_Z=2017/1/2
-* Row 2 was added to the database today (2017/1/2). This change is valid for the foreseeable future. So IN_Z = 2017/1/2, OUT_Z = Infinity
+**(a) Invalidating rows **
 
-| Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
-| --- | --- | --- | --- | --- | --- | --- |
-| ACC1      | 0       | 2017/1/1 | 9999/1/1 | 2017/1/1 | 9999/1/1 | 1 |
-| ACC1      | 0       | 2017/1/1 | 2017/1/2 | 2017/1/2 | 9999/1/1 | 2 |
-
-We then add Row 3 which records two facts as well
-* Starting today (2017/1/2) the account has a balance of $10. This is true for the foreseeable future. So FROM_Z = 2017/1/2, THRU_Z = Infinity
-* Row 3 was added to the database today (2017/1/2). This change is valid for the forseeable future. So IN_Z = 2017/1/2, OUT_Z = Infinity
+Row 1 currently states that the balance is $0 from 2017/1/1 to Infinity. This is not true anymore as the bank just accepted a $200 deposit on 2017/1/2. So we invalidate Row 1 by setting its OUT_Z to today (2017/1/2). 
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
-| ACC1      | 0       | 2017/1/1 | 9999/1/1 | 2017/1/1 | 9999/1/1 | 1 |
-| ACC1      | 0       | 2017/1/1 | 2017/1/2 | 2017/1/2 | 9999/1/1 | 2 |
-| ACC1      | 10      | 2017/1/2 | 9999/1/2 | 2017/1/2 | 9999/1/1 | 3 |
+| ACC1      | 100      | 2017/1/1 | 9999/1/1 | 2017/1/1 | 2017/1/2 | 1 |
 
-Now, Row 1 contradicts Row 2. Row 1 states the balance was $0 from 2017/1/1 to Infinity, whereas Row 2 states the balance was $0 from only 2017/1/1 to 2017/1/2. So we fix Row 1 to indicate that it is no longer valid by updating it's OUT_Z to the current timestamp of 2017/1/2.
+**(b) Adding new rows 
 
-> The key idea here is that we do not **delete rows**. We only mutate the timestamp columns as needed
+Our new view of the world is as follows :
+* From 2017/1/1 to 2017/1/2, balance = $100 (opening balance)
+* From 2017/1/2 to Infinity, balance = $300 (opening balance plus deposit of $200)
+
+So we add Rows 2 and 3 to capture these facts. The IN_Z and OUT_Z of these rows captures the fact that these
+chages were made today and that these rows represent the latest state of the account (i.e OUT_Z is Infinity)
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
-| ACC1      | 0       | 2017/1/1 | 9999/1/1 | 2017/1/1 | 2017/1/2 | 1 |
-| ACC1      | 0       | 2017/1/1 | 2017/1/2 | 2017/1/2 | 9999/1/1 | 2 |
-| ACC1      | 10      | 2017/1/2 | 9999/1/2 | 2017/1/2 | 9999/1/1 | 3 |
+| ACC1      | 100      | 2017/1/1 | 9999/1/1 | 2017/1/1 | 2017/1/2 | 1 |
+| ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/2 | 9999/1/1 | 2 |
+| ACC1      | 300      | 2017/1/2 | 9999/1/1 | 2017/1/2 | 9999/1/1 | 3 |
 
+## Ten days later - Deposit $50
 
+Ten days later on 2017/1/12 you deposit $50.
 
+> But remember, the ATM is buggy!
 
+Because of a software bug that ATM does send your deposit to the bank. While you walk away thinking your account has $350, your account actually has only $300.
 
+| Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
+| --- | --- | --- | --- | --- | --- | --- |
+| ACC1      | 100      | 2017/1/1 | 9999/1/1 | 2017/1/1 | 2017/1/2 | 1 |
+| ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/2 | 9999/1/1 | 2 |
+| ACC1      | 300      | 2017/1/2 | 9999/1/1 | 2017/1/2 | 9999/1/1 | 3 |
 
+## Another five days later - You are mad !!
 
+Five days later on 2017/1/17, you check your bank account online and realize the mistake. Your account is short by $50. Furious, you call the bank to complain. They are vey apologetic and agree to adjust your balance.
+
+Just as before, the bank wants to preserve history in both dimensions. They follow the same approach to update the database.
+* Invalidate rows whose view of the world is incorrect
+* Add new rows to reflect the new view of the world
+
+**(a)Invalidate rows**
+
+All the existing rows are invalid along the processing time dimension. However, we want to preserve the fact that they were invalid. So we invalidate them by setting their OUT_Z to today (2017/1/17).
+
+| Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
+| --- | --- | --- | --- | --- | --- | --- |
+| ACC1      | 100      | 2017/1/1 | 9999/1/1 | 2017/1/1 | 2017/1/17 | 1 |
+| ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/2 | 2017/1/17 | 2 |
+| ACC1      | 300      | 2017/1/2 | 9999/1/1 | 2017/1/2 | 2017/1/17 | 3 |
+
+**(b)Add new rows**
+
+Our new view of the world is as follows :
+* From 2017/1/1 to 2017/1/2, balance = $100 (opening balance)
+* From 2017/1/2 to 2017/1/12, balance = $300 (opening balance + deposit of $200 on 2017/1/2)
+* From 2017/1/12 to Infinity, balance = $350 (opening balance + deposit of $200 on 2017/1/2 + deposit of $50 on 2017/1/12)
+
+Since we are adding these rows today (2017/1/17), the IN_Z of these newly added rows = 2017/1/17.
+
+| Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
+| --- | --- | --- | --- | --- | --- | --- |
+| ACC1      | 100      | 2017/1/1 | 9999/1/1 | 2017/1/1 | 2017/1/17 | 1 |
+| ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/2 | 2017/1/17 | 2 |
+| ACC1      | 300      | 2017/1/2 | 9999/1/1 | 2017/1/2 | 2017/1/17 | 3 |
+| ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/17 | 9999/1/1 | 4 |
+| ACC1      | 300      | 2017/1/2 | 2017/1/12 | 2017/1/17 | 9999/1/1 | 5 |
+| ACC1      | 350      | 2017/1/12 | 9999/1/1 | 2017/1/17| 9999/1/1 | 6 |
