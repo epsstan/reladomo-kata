@@ -23,7 +23,7 @@ While these two times are often the same, they can be different. Consider the fo
 
 ## A few days in the life of a BugsRus customer
 
-## Day 1 (2017/1/1) - Open an account 
+### Day 1 (2017/1/1) - Open an account 
 
 On 2017/1/1 you open a new bank account with a balance of $100. The bank updates it's database (table) with an entry for your account.
 
@@ -47,7 +47,7 @@ Row 1 records the following facts
 * The account was created on today (2017/1/1). This fact is true for the forseeable future. So FROM_Z = 2017/1/1, THRU_Z = Infinity
 * The acccount was added to the database today (2017/1/1). This change is valid for the foreseeable future. So IN_Z = 2017/1/1, OUT_Z = Infinity
 
-## Day 2 (2017/1/2) - Deposit $200
+### Day 2 (2017/1/2) - Deposit $200
 
 The next day, on 2017/1/2 you deposit $200 at one of the ATMs.
 
@@ -80,7 +80,7 @@ chages were made today and that these rows represent the latest state of the acc
 | ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/2 | 9999/1/1 | 2 |
 | ACC1      | 300      | 2017/1/2 | 9999/1/1 | 2017/1/2 | 9999/1/1 | 3 |
 
-## Ten days later (2017/1/12) - Deposit $50
+### Ten days later (2017/1/12) - Deposit $50
 
 Ten days later on 2017/1/12 you deposit $50.
 
@@ -94,7 +94,7 @@ Because of a software bug the ATM does not send your deposit to the bank. While 
 | ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/2 | 9999/1/1 | 2 |
 | ACC1      | 300      | 2017/1/2 | 9999/1/1 | 2017/1/2 | 9999/1/1 | 3 |
 
-## Another five days later (2017/1/17) - You are mad !!
+### Another five days later (2017/1/17) - You are mad !!
 
 Five days later on 2017/1/17, you check your bank account online and realize the mistake. Your account is short by $50. Furious, you call the bank to complain. They are vey apologetic and agree to adjust your balance.
 
