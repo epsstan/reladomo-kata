@@ -49,8 +49,8 @@ The table looks as follows:
 
 Row 1 records the following facts 
 ---------------------------------
-* The account was created on today (Jan 1). So `FROM_Z = Jan 1`
-* The acccount was added to the database today (Jan 1). So `IN_Z = Jan 1`
+* The account was created on today (Jan 1), therefore `FROM_Z = Jan 1`
+* The acccount was added to the database today (Jan 1), therefore `IN_Z = Jan 1`
 * This is the only row for this account. And we mark these rows as valid by setting *THRU_Z* and *OUT_Z* equal to *Infinity*.
 
 
