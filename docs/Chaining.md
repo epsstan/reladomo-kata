@@ -2,6 +2,8 @@
 
 ## Introduction
 
+This article introduces the concept of bitemporal chaining for relational databases. Using an example of a bank account, it shows how bitemporal chaining can be used to preseve history and reason about changes to a relational database.
+
 ## Bugs-R-Us Bank
 
 Consider the case of the Bugs-R-Us bank. The bank has buggy ATMs!!
