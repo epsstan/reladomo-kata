@@ -1,4 +1,8 @@
-# Bugs-R-Us bank
+# Bitemporal chaining
+
+## Introduction
+
+## Bugs-R-Us Bank
 
 Consider the case of the Bugs-R-Us bank. The bank has buggy ATMs!!
 
