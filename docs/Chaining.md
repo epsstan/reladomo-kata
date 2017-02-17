@@ -19,7 +19,7 @@ the balance so many times, that they are completely unable to reason about your 
 
 Lucikly, they have learnt about bitemporal chaining that will help them fix these problems. 
 
-# Bitemporal chaining
+## Bitemporal chaining
 
 In bitemporal chaining, all changes to a database are tracked along two dimensions :
 * Processing Time - This is when the change actually occurred in the world 
