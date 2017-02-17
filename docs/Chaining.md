@@ -2,70 +2,71 @@
 
 ## Introduction
 
-This article introduces the concept of bitemporal chaining for relational databases. Using an example of a bank account, it shows how bitemporal chaining database, it is easy to make corrections to historical data without losing any history.
+This article introduces the concept of bitemporal chaining for relational databases. Using an example of a bank account, it shows how bitemporal chaining database is represented in the database, it is easy to make corrections to historical data without losing any history.
 
 ## Bugs-R-Us Bank
 
-Consider the case of the Bugs-R-Us bank. The bank has buggy ATMs!!
+Consider the case of the Bugs-R-Us bank. The bank has buggy ATMs!
 
-These ATMs are full of software bugs that result in ATM activity not being correctly posted to your account. Sometimes the bank says you have less money than you actually have ; sometimes it says you have more money than you actually have!
+These ATMs are full of software bugs that result in ATM activity not being correctly posted to your account. Sometimes the bank says you have less money than you actually have;  sometimes it says you have more money than you actually have!
 
-All of this is very frustrating. But the bank happily adjusts your balance everytime you report a discrepancy. 
+All of this is very frustrating, but the bank happily adjusts your balance everytime you report a discrepancy.
 
-However, the bank has a new problem (on top of the ATMs being buggy). They have been manually adjusting 
-the balance so many times, that they are completely unable to reason about your account's history. 
+However, in addition to the ATMs being buggy, the bank has a new problem. The account balances have been manually adjusted so many timea,
+that they they are unable to resolve an account's history.
 
-Lucikly, they have learnt about bitemporal chaining that will help them fix these problems. 
+Lucikly, they have learned about bitemporal chaining, thus allowing them to fix these problems.
 
 ## Bitemporal chaining
 
-In bitemporal chaining, all changes to a database are tracked along two dimensions :
-* Processing Time - This is when the change actually occurred in the world 
-* Transaction Time - This is when the change actually was recorded in the database
+In bitemporal chaining, all changes to a database are tracked along two dimensions:
+* *Processing Time* - This is when the change actually occurred in the real world
+* *Transaction Time* - This is when the change was recorded in the database
 
-While these two times are often the same, they can be different. Consider the following example.
+While these two times are often the same, they can be different. Consider the following example:
 
 ## A few days in the life of a Bugs-R-Us customer
 
 ### Day 1 (Jan 1) - Open an account 
 
-On Jan 1 you open a new bank account with a balance of $100. The bank updates it's database (table) with an entry for your account.
+On Jan 1, you open a new bank account with a balance of $100. The bank updates its database (table) with an entry for your account.
 
-Since bitemporal chaining is being used, each row in the table has four timestamp columns :
-* FROM_Z and THRU_Z track the validity of the row along the processing time dimension
-* IN_Z and OUT_Z track the validity of the row along the transaction time dimension
+Since [bitemporal chaining](https://en.wikipedia.org/wiki/Bitemporal_Modeling) is being used, each row in the table has four timestamp columns:
+* *FROM_Z* and *THRU_Z* track the validity of the row along the processing time dimension
+* *IN_Z* and *OUT_Z* track the validity of the row along the transaction time dimension
 
-The table looks as follows. 
+The table looks as follows:
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
 | ACC1      | 100      | Jan 1 | Infinity | Jan 1 | Infinity | 1 |
 
-> For simplicity, this example will use dates (formatted as 'Jan 1' for simplicity) instead of timestamps
+> For simplicity, this example will use dates (formatted as 'Jan 1') instead of timestamps
 
-> The 'Row Number' column provides an easy way to refer to rows in this document. It is not part of the table schema.
+> The *Row Number* column provides an easy way to refer to rows in this document. It is not part of the table schema.
 
-> Infinity is a magic timestamp chosen such that it cannot possibly be a valid date in the system e.g. 9999/1/1.
+> *Infinity* is a magic timestamp chosen such that it cannot possibly be a valid date in the system e.g. *9999/1/1*.
 
 Row 1 records the following facts 
-* The account was created on today (Jan 1). So FROM_Z = Jan 1
-* The acccount was added to the database today (Jan 1). So IN_Z = Jan 1
-* This is the only row for this account. And we mark these rows as valid by setting the THRU_Z and OUT_Z to Infinity
+---------------------------------
+* The account was created on today (Jan 1). So `*FROM_Z* = Jan 1`
+* The acccount was added to the database today (Jan 1). `So *IN_Z* = Jan 1`
+* This is the only row for this account. And we mark these rows as valid by setting *THRU_Z* and *OUT_Z* equal to *Infinity*.
 
 
 ### Day 2 (Jan 2) - Deposit $200
 
-The next day, on Jan 2 you deposit $200 at one of the ATMs.
+The next day, on Jan 2, you deposit $200 at one of the ATMs.
 
-The goal of bitemporal milestoning is to track changes along both dimensions. So the bank cannot simply update the balance in Row 1. They cannot delete Row 1 and insert a new row either as that loses history.
+The goal of bitemporal milestoning is to track changes along both dimensions, so the bank cannot simply update the balance in *Row 1*. They cannot delete *Row 1* and insert a new row either as that loses history.
 
-In general, making changes to a bitemporally chained database is a two step process :
+In general, making changes to a bitemporally chained database is a two step process:
 * Invalidate rows whose view of the world is incorrect
 * Add new rows to reflect the new view of the world
 
 **Invalidating rows**
 
-Row 1 currently states that the balance is $0 from Jan 1 to Infinity. This is not true anymore as the bank just accepted a $200 deposit on Jan 2. So we invalidate Row 1 by setting its OUT_Z to today (Jan 2). 
+*Row 1* currently states that the balance is *$0* from *Jan 1* to *Infinity*. This is not true anymore as the bank just accepted a *$200* deposit on *Jan 2*, so we invalidate *Row 1* by setting its *OUT_Z* to *Jan 2* (today).
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -74,11 +75,11 @@ Row 1 currently states that the balance is $0 from Jan 1 to Infinity. This is no
 **Adding new rows**
 
 Our new view of the world is as follows :
-* From Jan 1 to Jan 2, balance = $100 (opening balance)
-* From Jan 2 to Infinity, balance = $300 (opening balance plus deposit of $200)
+* From *Jan 1* to *Jan 2*, *balance = $100* (opening balance)
+* From *Jan 2* to *Infinity*, *balance = $300* (opening balance plus deposit of *$200*)
 
-So we add Rows 2 and 3 to capture these facts. The IN_Z and OUT_Z of these rows captures the fact that these
-chages were made today and that these rows represent the latest state of the account (i.e OUT_Z is Infinity)
+So we add *Row 2* and *Row 3* to capture these facts. The *IN_Z* and *OUT_Z* of these rows captures the fact that these
+changes were made today and that these rows represent the latest state of the account (i.e *OUT_Z = Infinity*).
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -86,13 +87,11 @@ chages were made today and that these rows represent the latest state of the acc
 | ACC1      | 100      | Jan 1 | Jan 2 | Jan 2 | Infinity | 2 |
 | ACC1      | 300      | Jan 2 | Infinity | Jan 2 | Infinity | 3 |
 
-### Ten days later (Jan 12) - Deposit $50
-
-Ten days later on Jan 12 you deposit $50.
+### Ten days later, on *Jan 12*, you deposit *$50*.
 
 > But remember, the ATM is buggy!
 
-Because of a software bug the ATM does not send your deposit to the bank. While you walk away thinking your account has $350, your account actually has only $300.
+Due to a software bug, the ATM does not send your deposit to the bank. While you walk away thinking your account contains $350, your account truly contains $300.
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -100,19 +99,19 @@ Because of a software bug the ATM does not send your deposit to the bank. While 
 | ACC1      | 100      | Jan 1 | Jan 2 | Jan 2 | Infinity | 2 |
 | ACC1      | 300      | Jan 2 | Infinity | Jan 2 | Infinity | 3 |
 
-### Another five days later (Jan 17) - You are mad !!
+### Five days later, on *Jan 17* - You are mad!
 
-Five days later on Jan 17, you check your bank account online and realize the mistake. Your account is short by $50. Furious, you call the bank to complain. They are vey apologetic and agree to adjust your balance.
+Five days later, on *Jan 17*, you check your bank account online and realize the mistake. Your account is short by *$50*. Furious, you call the bank to complain. They are very apologetic and agree to adjust your balance.
 
-Just as before, the bank wants to preserve history in both dimensions. They follow the same approach :
+Just as before, the bank wants to preserve history in both dimensions. They follow the same approach:
 * Invalidate rows whose view of the world is incorrect
 * Add new rows to reflect the new view of the world
 
 **Invalidate rows** 
 
-Row 1 is already invalid. It does not need to be updated.
+*Row 1* is already invalid, therefore it does not need to be updated.
 
-Rows 2 and 3 are invalid along the processing time dimension. However, we want to preserve the fact that they are invalid. So we invalidate them by setting their OUT_Z to today (Jan 17).
+*Row 2* and *Row 3* are invalid along the processing time dimension, however, we want to preserve the fact that they are invalid. We invalidate them by setting their *OUT_Z* to *Jan 17* (today).
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -123,11 +122,11 @@ Rows 2 and 3 are invalid along the processing time dimension. However, we want t
 **Add new rows**
 
 Our new view of the world is as follows :
-* From Jan 1 to Jan 2, balance = $100 (opening balance)
-* From Jan 2 to Jan 12, balance = $300 (opening balance + deposit of $200 on Jan 2)
-* From Jan 12 to Infinity, balance = $350 (opening balance + deposit of $200 on Jan 2 + deposit of $50 on Jan 12)
+* From *Jan 1* to *Jan 2*, *balance = $100* (opening balance)
+* From *Jan 2* to *Jan 12*, *balance = $300* (opening balance + deposit of $200 on Jan 2)
+* From *Jan 12* to *Infinity*, *balance = $350* (opening balance + deposit of $200 on Jan 2 + deposit of $50 on Jan 12)
 
-Since we are adding these rows today (Jan 17), the IN_Z of these newly added rows = Jan 17.
+Since we are adding these rows on *Jan 17* (today), the *IN_Z* of these newly added rows is *Jan 17*.
 
 | Account # | Balance | FROM_Z | THRU_Z |  IN_Z |  OUT_Z |  Row Number |
 | --- | --- | --- | --- | --- | --- | --- |
