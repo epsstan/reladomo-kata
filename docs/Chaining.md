@@ -64,7 +64,7 @@ In general, making changes to a bitemporally chained database is a two step proc
 * Invalidate rows whose view of the world is incorrect
 * Add new rows to reflect the new view of the world
 
-###  **Invalidating rows**
+####  **Invalidating rows**
 
 *Row 1* currently states that the balance is *$0* from *Jan 1* to *Infinity*. This is not true anymore as the bank just accepted a *$200* deposit on *Jan 2*, so we invalidate *Row 1* by setting its *OUT_Z* to *Jan 2* (today).
 
