@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This article introduces the concept of bitemporal chaining for relational databases. Using an example of a bank account, it shows how bitemporal chaining can be used to preseve history and reason about changes to a relational database.
+This article introduces the concept of bitemporal chaining for relational databases. Using an example of a bank account, it shows how bitemporal chaining database, it is easy to make corrections to historical data without losing any history.
 
 ## Bugs-R-Us Bank
 
@@ -13,10 +13,7 @@ These ATMs are full of software bugs that result in ATM activity not being corre
 All of this is very frustrating. But the bank happily adjusts your balance everytime you report a discrepancy. 
 
 However, the bank has a new problem (on top of the ATMs being buggy). They have been manually adjusting 
-the balance so many times, that they are completely unable to reason about your account's history. In particular 
-
-1. they do not have a way to track when your bank balance was adjusted
-2. they do not have a way of determining what **they thought** the balance was at a point in time AND
+the balance so many times, that they are completely unable to reason about your account's history. 
 
 Lucikly, they have learnt about bitemporal chaining that will help them fix these problems. 
 
@@ -28,7 +25,7 @@ In bitemporal chaining, all changes to a database are tracked along two dimensio
 
 While these two times are often the same, they can be different. Consider the following example.
 
-## A few days in the life of a BugsRus customer
+## A few days in the life of a Bugs-R-Us customer
 
 ### Day 1 (2017/1/1) - Open an account 
 
