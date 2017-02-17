@@ -19,7 +19,7 @@ Lucikly, they have learned about bitemporal chaining, thus allowing them to fix 
 
 ## Bitemporal chaining
 
-In bitemporal chaining, all changes to a database are tracked along two dimensions:
+In [bitemporal chaining](https://en.wikipedia.org/wiki/Bitemporal_Modeling) , all changes to a database are tracked along two dimensions:
 * *Processing Time* - This is when the change actually occurred in the real world
 * *Transaction Time* - This is when the change was recorded in the database
 
@@ -31,7 +31,7 @@ While these two times are often the same, they can be different. Consider the fo
 
 On Jan 1, you open a new bank account with a balance of $100. The bank updates its database (table) with an entry for your account.
 
-Since [bitemporal chaining](https://en.wikipedia.org/wiki/Bitemporal_Modeling) is being used, each row in the table has four timestamp columns:
+Since bitemporal chaining is being used, each row in the table has four timestamp columns:
 * *FROM_Z* and *THRU_Z* track the validity of the row along the processing time dimension
 * *IN_Z* and *OUT_Z* track the validity of the row along the transaction time dimension
 
@@ -49,8 +49,8 @@ The table looks as follows:
 
 Row 1 records the following facts 
 ---------------------------------
-* The account was created on today (Jan 1), therefore `FROM_Z = Jan 1`
-* The acccount was added to the database today (Jan 1), therefore `IN_Z = Jan 1`
+* The account was created on *Jan 1* (today), therefore `FROM_Z = Jan 1`
+* The acccount was added to the database on *Jan 1* (today), therefore `IN_Z = Jan 1`
 * This is the only row for this account. And we mark these rows as valid by setting *THRU_Z* and *OUT_Z* equal to *Infinity*.
 
 
