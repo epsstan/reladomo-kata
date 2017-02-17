@@ -52,7 +52,6 @@ Row 1 records the following facts
 * The acccount was added to the database today (2017/1/1). So IN_Z = 2017/1/1
 * This is the only row for this account. And we mark these rows as valid by setting the THRU_Z and OUT_Z to Infinity
 
-![Alt text](/docs/day1.png?raw=true "Optional Title")
 
 ### Day 2 (2017/1/2) - Deposit $200
 
@@ -138,3 +137,12 @@ Since we are adding these rows today (2017/1/17), the IN_Z of these newly added 
 | ACC1      | 100      | 2017/1/1 | 2017/1/2 | 2017/1/17 | 9999/1/1 | 4 |
 | ACC1      | 300      | 2017/1/2 | 2017/1/12 | 2017/1/17 | 9999/1/1 | 5 |
 | ACC1      | 350      | 2017/1/12 | 9999/1/1 | 2017/1/17| 9999/1/1 | 6 | 
+
+## Visualizing bitemporal chaining
+
+It is very helpful to visualize the history of changes in a two dimensional chart. The following figure contains three charts showing how the table changes over time.
+
+Each colored (and numbered) rectangle corresponds to a row in the database.
+Even though the graphs are not drawn to scale, it is clear that each change does not destory history (i.e each change only introduces more rectangles).
+
+![Visualization](/docs/visualization.png?raw=true "Visualization")
