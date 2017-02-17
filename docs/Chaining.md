@@ -52,6 +52,8 @@ Row 1 records the following facts
 * The acccount was added to the database today (2017/1/1). So IN_Z = 2017/1/1
 * This is the only row for this account. And we mark these rows as valid by setting the THRU_Z and OUT_Z to Infinity
 
+![Alt text](/day1.png?raw=true "Optional Title")
+
 ### Day 2 (2017/1/2) - Deposit $200
 
 The next day, on 2017/1/2 you deposit $200 at one of the ATMs.
