@@ -107,7 +107,7 @@ Just as before, the bank wants to preserve history in both dimensions. They foll
 * Invalidate rows whose view of the world is incorrect
 * Add new rows to reflect the new view of the world
 
-## Invalidate rows** 
+## Invalidate rows
 
 *Row 1* is already invalid, therefore it does not need to be updated.
 
@@ -119,7 +119,7 @@ Just as before, the bank wants to preserve history in both dimensions. They foll
 | ACC1      | 100      | Jan 1 | Jan 2 | Jan 2 | Jan 17 | 2 |
 | ACC1      | 300      | Jan 2 | Infinity | Jan 2 | Jan 17 | 3 |
 
-## Add new rows**
+## Add new rows
 
 Our new view of the world is as follows :
 * From *Jan 1* to *Jan 2*, *balance = $100* (opening balance)
