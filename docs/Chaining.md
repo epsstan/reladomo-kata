@@ -49,14 +49,14 @@ The table looks as follows:
 
 Row 1 records the following facts 
 ---------------------------------
-* The account was created on today (Jan 1). So `*FROM_Z* = Jan 1`
-* The acccount was added to the database today (Jan 1). `So *IN_Z* = Jan 1`
+* The account was created on today (Jan 1). So `FROM_Z = Jan 1`
+* The acccount was added to the database today (Jan 1). So `IN_Z = Jan 1`
 * This is the only row for this account. And we mark these rows as valid by setting *THRU_Z* and *OUT_Z* equal to *Infinity*.
 
 
 ### Day 2 (Jan 2) - Deposit $200
 
-The next day, on Jan 2, you deposit $200 at one of the ATMs.
+The next day, on *Jan 2*, you deposit *$200* at one of the ATMs.
 
 The goal of bitemporal milestoning is to track changes along both dimensions, so the bank cannot simply update the balance in *Row 1*. They cannot delete *Row 1* and insert a new row either as that loses history.
 
