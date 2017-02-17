@@ -19,7 +19,7 @@ Lucikly, they have learned about bitemporal chaining, thus allowing them to fix 
 
 ## Bitemporal chaining
 
-In [bitemporal chaining](https://en.wikipedia.org/wiki/Bitemporal_Modeling) , all changes to a database are tracked along two dimensions:
+In [bitemporal chaining](https://en.wikipedia.org/wiki/Bitemporal_Modeling), all changes to a database are tracked along two dimensions:
 * *Processing Time* - This is when the change actually occurred in the real world
 * *Transaction Time* - This is when the change was recorded in the database
 
