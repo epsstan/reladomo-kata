@@ -29,7 +29,7 @@ While these two times are often the same, they can be different. Consider the fo
 
 ### Day 1 (Jan 1) - Open an account 
 
-On Jan 1, you open a new bank account with a balance of $100. The bank updates its database (table) with an entry for your account.
+On *Jan 1*, you open a new bank account with a balance of *$100*. The bank updates its database (table) with an entry for your account.
 
 Since bitemporal chaining is being used, each row in the table has four timestamp columns:
 * *FROM_Z* and *THRU_Z* track the validity of the row along the processing time dimension
