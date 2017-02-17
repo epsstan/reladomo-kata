@@ -123,8 +123,8 @@ Just as before, the bank wants to preserve history in both dimensions. They foll
 
 Our new view of the world is as follows :
 * From *Jan 1* to *Jan 2*, *balance = $100* (opening balance)
-* From *Jan 2* to *Jan 12*, *balance = $300* (opening balance + deposit of $200 on Jan 2)
-* From *Jan 12* to *Infinity*, *balance = $350* (opening balance + deposit of $200 on Jan 2 + deposit of $50 on Jan 12)
+* From *Jan 2* to *Jan 12*, *balance = $300* (opening balance + deposit of *$200* on *Jan 2*)
+* From *Jan 12* to *Infinity*, *balance = $350* (opening balance + deposit of *$200* on *Jan 2* + deposit of *$50* on *Jan 12*)
 
 Since we are adding these rows on *Jan 17* (today), the *IN_Z* of these newly added rows is *Jan 17*.
 
