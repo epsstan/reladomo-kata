@@ -48,8 +48,9 @@ The table looks as follows.
 > 9999/1/1 is used as a magic timestamp to indicate infinity
 
 Row 1 records the following facts 
-* The account was created on today (2017/1/1). This fact is true for the forseeable future. So FROM_Z = 2017/1/1, THRU_Z = Infinity
-* The acccount was added to the database today (2017/1/1). This change is valid for the foreseeable future. So IN_Z = 2017/1/1, OUT_Z = Infinity
+* The account was created on today (2017/1/1). So FROM_Z = 2017/1/1
+* The acccount was added to the database today (2017/1/1). So IN_Z = 2017/1/1
+* This is the only row for this account. And we mark these rows as valid by setting the THRU_Z and OUT_Z to Infinity
 
 ### Day 2 (2017/1/2) - Deposit $200
 
