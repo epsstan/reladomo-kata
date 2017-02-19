@@ -3,7 +3,7 @@
 <chapter label="3">
     <title>CRUD Operations</title>
     <sect1>
-        <title>Introduction</title>
+        <title>Building A REST API</title>
         <para>This chapter demonstrates basic CRUD (Create, Read, Update, Delete) operations using Reladomo.</para>
         <para>
             Imagine that we want to build a REST API for our bank. The API for <code>Customer</code> could look like this. 
@@ -33,19 +33,19 @@ DELETE /customer/{id}         Delete a Customer]]>
     mickey.setCustomerId(123);
     mickey.setFirstName("Mickey");
     mickey.setLastName("Mouse");
-}]]>
+]]>
             </programlisting>
             <para>
                 Invoking multiple setters is clunky. This can be improved by adding a custom constructor to the generated <code>Customer</code> class.
             </para>
             <programlisting language="java"><![CDATA[
-	public Customer(int customerId, String firstName, String lastName)
-	{
-		super();
-		this.setCustomerId(customerId);
-		this.setFirstName(firstName);
-		this.setLastName(lastName);
-	}]]>
+public Customer(int customerId, String firstName, String lastName)
+{
+    super();
+    this.setCustomerId(customerId);
+	this.setFirstName(firstName);
+	this.setLastName(lastName);
+}]]>
             </programlisting>
             <note>
                 The generated classes are meant to be modified. However, the default no-arg constructor has to be preserved as it is used internally by Reladomo.
@@ -79,23 +79,23 @@ DELETE /customer/{id}         Delete a Customer]]>
                 If atomic inserts are needed, simply wrap the insert in a transaction.
             </para>
             <programlisting><![CDATA[
-    MithraManagerProvider.getMithraManager().executeTransactionalCommand((tx) -> {
+MithraManagerProvider.getMithraManager().executeTransactionalCommand((tx) -> {
 
-        Customer mickey = new Customer();
-        mickey.setCustomerId(123);
-        mickey.setFirstName("Mickey");
-        mickey.setLastName("Mouse");
+    Customer mickey = new Customer();
+    mickey.setCustomerId(123);
+    mickey.setFirstName("Mickey");
+    mickey.setLastName("Mouse");
 
-        CustomerAccount savingsAccount = new CustomerAccount();
-        savingsAccount.setAccountId(1000);
-        savingsAccount.setBalance(100);
-        savingsAccount.setAccountType("savings");
+    CustomerAccount savingsAccount = new CustomerAccount();
+    savingsAccount.setAccountId(1000);
+    savingsAccount.setBalance(100);
+    savingsAccount.setAccountType("savings");
 
-        mickey.getAccounts().add(savingsAccount);
+    mickey.getAccounts().add(savingsAccount);
 
-        mickey.cascadeInsert();
-        return null;
-    });]]></programlisting>
+    mickey.cascadeInsert();
+    return null;
+});]]></programlisting>
         </sect1>
         <sect1>
             <title>Object Read (R)</title>
@@ -106,18 +106,18 @@ DELETE /customer/{id}         Delete a Customer]]>
                 which in turn expose methods that return <code>Operation</code>s.
             </para>
             <programlisting><![CDATA[
-        StringAttribute<Customer> firstNameAttribute = CustomerFinder.firstName();
-        Operation firstNameOperation = firstNameAttribute.eq("Mickey");
+    StringAttribute<Customer> firstNameAttribute = CustomerFinder.firstName();
+    Operation firstNameOperation = firstNameAttribute.eq("Mickey");
 
-        IntegerAttribute<Customer> idAttribute = CustomerFinder.customerId();
-        Operation idOperation = idAttribute.in(IntSets.immutable.of(123, 456, 789));
+    IntegerAttribute<Customer> idAttribute = CustomerFinder.customerId();
+    Operation idOperation = idAttribute.in(IntSets.immutable.of(123, 456, 789));
 ]]>
             </programlisting>
             <para>
                 Operations can also be chained. Once an operation is built, one of the generated <code>findMany</code>, <code>findOne</code> methods is used to actually fetch the objects.
             </para>
             <programlisting><![CDATA[
-    CustomerList mickeys = CustomerFinder.findMany(firstNameOperation);
+CustomerList mickeys = CustomerFinder.findMany(firstNameOperation);
             ]]>
             </programlisting>
             <para>
@@ -143,7 +143,8 @@ public CustomerList getCustomersByLastName(String lastName)
                 <para>When a finder that returns a list is invoked, the entire list is forced into memory. This is not ideal if the list is huge. In such cases, it is better to iterate over the list with a cursor.
                  The snippet below iterates over the first hundred Customers. The cursor is terminated when the <code>DoWhileProcedure</code> lambda returns false.
                 </para>
-                <programlisting linenumbering="numbered"><![CDATA[CustomerList customers = ...;
+                <programlisting linenumbering="numbered"><![CDATA[
+CustomerList customers = ...;
 MutableIntSet ids = IntSets.mutable.empty();
 customers.forEachWithCursor(o -> {
     Customer p = (Customer)o;
@@ -235,7 +236,7 @@ MithraManagerProvider.getMithraManager().executeTransactionalCommand((tx) -> {
             </para>
             <programlisting linenumbering="numbered"><![CDATA[
 public void testDetached()
-    {
+{
     Customer mickey = CustomerFinder.findByPrimaryKey(1);
     assertEquals("mickey", mickey.getFirstName());
 
@@ -245,7 +246,7 @@ public void testDetached()
     Customer detached = p.getDetachedCopy();
     detached.setFirstName("SuperMickey");
     assertEquals("Mickey", CustomerFinder.findByPrimaryKey(1).getFirstName());
-    }]]></programlisting>
+}]]></programlisting>
         </sect2>
         <para>
             In the above snippet, the set of the first name in line 3 is flushed to the database right away.

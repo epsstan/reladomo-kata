@@ -2,16 +2,13 @@
 
 <chapter label="4">
     <title>A Complete Reladomo Application</title>
-    <sect1>
-        <title>Introduction</title>
-        <para>
-            This chapter does not introduce any new Reladomo concepts. It uses all the concepts introduced
-            in the previous chapters to build a REST API for the bank domain model introduced in chapter 1.
-        </para>
-        <para>
-            It is assumed you have a basic familiarity with REST and building REST APIs with Jersey.
-        </para>
-    </sect1>
+    <para>
+        This chapter does not introduce any new Reladomo concepts. It uses all the concepts introduced
+        in the previous chapters to build a REST API for the bank domain model introduced in chapter 1.
+    </para>
+    <para>
+        It is assumed you have a basic familiarity with REST and building REST APIs with Jersey.
+    </para>
     <sect1>
         <title>REST Resource</title>
         <para>

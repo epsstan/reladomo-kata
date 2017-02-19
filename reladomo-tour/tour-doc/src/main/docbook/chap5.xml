@@ -2,19 +2,19 @@
 
 <chapter label="5">
     <title>Testing With Reladomo</title>
-    <sect1>
-        <title>Introduction</title>
-        <para>
-            One of the features that distinguishes Reladomo from other ORM frameworks is its first class
-            support for testing. This chapter shows how you can write simple and fast tests for a Reladomo
-            application.
-        </para>
-        <para>Reladomo's testing philosophy is very simple. You should be able to test your application
+    <para>
+        One of the features that distinguishes Reladomo from other ORM frameworks is its first class
+        support for testing. This chapter shows how you can write simple and fast tests for a Reladomo
+        application.
+    </para>
+    <para>
+        Reladomo's testing philosophy is very simple. You should be able to test your application
         without the usual ceremony of mocks and other test helpers. To that end, Reladomo facilitates
         testing by starting and populating an in-memory H2 database with test data. All of you have to do is
         to point your application against this in-memory database and exercise your
-            application's API/interface.</para>
-    </sect1>
+        application's API/interface.
+    </para>
+
     <sect1>
         <title>Testing In Action</title>
         <sect2>

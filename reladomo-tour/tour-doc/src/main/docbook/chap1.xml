@@ -2,13 +2,11 @@
 
 <chapter label="1">
     <title>Domain Modeling</title>
-    <sect1>
-        <title>Introduction</title>
-        <para>
-            This chapter introduces domain modeling in Reladomo.
-            We start by building a domain model of an application and the use Reladomo to generate classes and DDL statements off of the domain model.
-        </para>
-    </sect1>
+    <para>
+        This chapter introduces domain modeling in Reladomo.
+        We start by building a domain model of an application and then
+        use Reladomo to generate classes and DDL statements off of the domain model.
+    </para>
     <sect1>
         <title>Domain Model</title>
         <para>
@@ -42,8 +40,9 @@
     <ClassName>Customer</ClassName>
     <DefaultTable>CUSTOMER</DefaultTable>
 
-    <Attribute name="customerId" javaType="int"     columnName="CUSTOMER_I" primaryKey="true"/>
-    <Attribute name="name"       javaType="String"  columnName="NAME_C"     nullable="false" maxLength="64"/>
+    <Attribute name="customerId" javaType="int"     columnName="CUSTOMER_I"  primaryKey="true"/>
+    <Attribute name="firstName"  javaType="String"  columnName="FIRST_NAME_C"  nullable="false" maxLength="64"/>
+    <Attribute name="lastName"   javaType="String"  columnName="LAST_NAME_C"  nullable="false" maxLength="64"/>
     <Attribute name="country"    javaType="String"  columnName="COUNTRY_I"  nullable="false" maxLength="48"/>
 
 </MithraObject>]]>
@@ -93,13 +92,12 @@
         <sect2>
             <title>Relationships</title>
             <para>
-                In the bank a customer is related to accounts. More specifically a customer can have one/more accounts.
+                In the bank a <code>Customer</code> is related to <code>CustomerAccount</code>s. More specifically a customer can have one or more accounts.
             </para>
             <programlisting><![CDATA[
 <Relationship name="accounts"
             relatedObject="CustomerAccount"
             cardinality="one-to-many"
-            reverseRelationshipName="customer">
         this.customerId = CustomerAccount.customerId
 </Relationship>
 ]]>        </programlisting>
@@ -127,16 +125,13 @@
             <para>
                 Using the <code>reverseRelationshipName</code> attribute provides the benefit of a single definition but with the code generated for both the classes.
             </para>
-        </sect2>
-        <sect2>
-            <title>Putting it all together</title>
             <para>
                 Here is the full listing of all the <code>MithraObject</code>s.
             </para>
             <programlisting><![CDATA[
 <MithraObject objectType="transactional"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="mithraobject.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="mithraobject.xsd">
 
     <PackageName>simplebank.domain</PackageName>
     <ClassName>Customer</ClassName>
@@ -154,8 +149,8 @@
 </MithraObject>
 
 <MithraObject objectType="transactional"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="mithraobject.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="mithraobject.xsd">
 
     <PackageName>simplebank.domain</PackageName>
     <ClassName>CustomerAccount</ClassName>
@@ -169,7 +164,6 @@
 
 </MithraObject>
             ]]>
-
             </programlisting>
         </sect2>
     </sect1>

@@ -2,10 +2,7 @@
 
 <chapter label="2">
     <title>Wiring A Reladomo Application</title>
-    <sect1>
-            <title>Introduction</title>
-            <para>This chapter demonstrates how to initialize Reladomo in an application.</para>
-    </sect1>
+    <para>This chapter demonstrates how to initialize Reladomo for use in an application.</para>
     <sect1>
         <title>Connection Manager</title>
         <para>
@@ -86,7 +83,7 @@ public class BankConnectionManager implements SourcelessConnectionManager
     </sect1>
     <sect1>
         <title>Runtime Configuration</title>
-        <para>.
+        <para>
             Reladomo's runtime is configured via a <code>MithraRuntime</code> XML file. This is similar to the <code>MithraClassList</code> in that it lists all the <code>MithraObject</code>s that
             are being used by the application. It is different in that it specifies runtime concerns such as connection management and caching. The connection manager class to be used is indicated via the <code>ConnectionManager</code> XML tag.
         </para>
@@ -140,7 +137,7 @@ public class SimpleBankApp {
 }]]>
         </programlisting>
         <para>
-            This simple application does not do anything useful other than initializing Reladomo. In the next chapter, we will extend this application to build a simple REST API for the Petstore.
+            This simple application does not do anything useful other than initializing Reladomo. In the next chapter, we will extend this application to build a simple REST API for the bank.
         </para>
     </sect1>
 </chapter>
