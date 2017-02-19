@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ref https://gist.github.com/esammer/1f3dc7b6b1ba372d843d -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>reladomo-tour</artifactId>
+        <groupId>com.goldmansachs.reladomo</groupId>
+        <version>16.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>tour-doc</artifactId>
+    <name>Tour Docs</name>
+
+    <build>
+        <!--This is required only to support running in Eclipse IDE. It does not impact the build for other IDEs-->
+        <plugins>
+
+            <!-- This gist is licensed under the Apache Software License v2.0. -->
+
+            <!-- Add the docbkx plugin to the maven project's pom/build/plugins/ section. -->
+
+            <plugin>
+                <groupId>com.agilejava.docbkx</groupId>
+                <artifactId>docbkx-maven-plugin</artifactId>
+                <version>2.0.17</version>
+                <dependencies>
+                    <!-- This tells docbkx to use a specific version of docbook. I used 5.x here. -->
+                    <dependency>
+                        <groupId>net.sf.docbook</groupId>
+                        <artifactId>docbook-xml</artifactId>
+                        <version>5.0-all</version>
+                        <type>zip</type>
+                        <classifier>resources</classifier>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <!-- If you're generating PDFs, you need to include the fop-hyph module. -->
+                    <!--
+                    <dependency>
+                      <groupId>net.sf.offo</groupId>
+                      <artifactId>fop-hyph</artifactId>
+                      <version>${version.fop-hyph}</version>
+                      <scope>runtime</scope>
+                    </dependency>
+                    -->
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <!-- Generate docbook as part of the generate-sources phase. -->
+                        <phase>generate-sources</phase>
+
+                        <!-- Generate PDF and XHTML5 output. -->
+                        <goals>
+                            <goal>generate-xhtml5</goal>
+                        </goals>
+                        <configuration>
+                            <!-- I put my source in src/main/docbook. -->
+                            <sourceDirectory>src/main/docbook</sourceDirectory>
+
+                            <!-- A comma separated list of top level docbook documents - book, article, and refpage -->
+                            <includes>*.xml</includes>
+
+                            <!-- Use   so we can break the book into one file per chapter. -->
+                            <xincludeSupported>true</xincludeSupported>
+
+                            <htmlStylesheet>mithradoc.css</htmlStylesheet>
+
+                            <!-- My preferences for labeling (i.e. numbering) chapters and sections. This is probably what you expect too. -->
+                            <chapterAutolabel>true</chapterAutolabel>
+                            <sectionAutolabel>true</sectionAutolabel>
+                            <linenumberingEveryNth>1</linenumberingEveryNth>
+                            <useExtensions>1</useExtensions>
+                            <linenumberingExtension>1</linenumberingExtension>
+                            <!-- Label up to 5 levels deep. -->
+                            <sectionAutolabelMaxDepth>5</sectionAutolabelMaxDepth>
+                            <!-- Make Chapter 1, section 1 labeled 1.1 instead of just 1. -->
+                            <sectionLabelIncludesComponentLabel>true</sectionLabelIncludesComponentLabel>
+
+                            <!-- By default, docbkx doesn't know how to include any other resources in its output. In order to get my sd.css
+                                 file into the output, I use a preprocess section (which is a bunch of ant commands) to copy everything in
+                                 src/main/docbook-resources/xhtml5 into the xhtml5 generated output directory target/docbkx/xhtml5/. -->
+                            <preProcess>
+                                <copy todir="${project.build.directory}/docbkx/xhtml5/">
+                                    <fileset dir="src/main/docbook-resources/xhtml5/"/>
+                                </copy>
+                            </preProcess>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- We package the rendered output into the module's jar artifact. Thisassumes the output of this maven project is ONLY
+                 docbook files. We do this so it's easy to include the jar of docbook in the maven repo when we deploy. Later, we use
+                 the maven assembly plugin to capture the content of this jar file.
+                 -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <classesDirectory>${project.build.directory}/docbkx</classesDirectory>
+                </configuration>
+            </plugin>
+
+            <!-- Include the maven assembly plugin with a custom descriptor in src/main/assembly/dist.xml. Ignore the
+                 combine.self=override - I need this because I'm overriding a parent assembly plugin. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>global</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <!-- combine.self allows us to override the parent pom config. -->
+                        <configuration combine.self="override">
+                            <descriptor>src/main/assembly/dist.xml</descriptor>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

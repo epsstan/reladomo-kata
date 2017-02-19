@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+        "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<book lang="en">
+    <bookinfo>
+        <title>Guided Tour Of Reladomo</title>
+        <subtitle>A Guide for Developers</subtitle>
+        <authorgroup>
+            <author>
+                <firstname>Ephrim</firstname>
+                <surname>Stanley</surname>
+            </author>
+        </authorgroup>
+    </bookinfo>
+
+    <toc></toc>
+
+    <preface id="target" revision="1">
+        <title>Target Audience</title>
+        <para>
+            This guide is intended for Java developers who are interested in Object Relational Mapping using Reladomo.
+        </para>
+    </preface>
+
+    <part label="I">
+        <title>Reladomo Basics</title>
+        <partintro>
+            <para>
+                This part introduces the basics of Reladomo. It includes basic domain modellimg concepts, domain modeling in Relaomo and a high
+                level overview of various Reladomo features. Finally, all of these comcepts are used to
+                implement a REST API for a bank where the data is persisted and fetched using Reladomo.
+            </para>
+            <para>
+                The code for all the chapters in this part can be found in <code>simple-bank</code> Maven module.
+            </para>
+        </partintro>
+        <xi:include href="chap1.xml"  xml:base="./" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+        <xi:include href="chap2.xml"  xml:base="./" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+        <xi:include href="chap3.xml"  xml:base="./" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+        <xi:include href="chap4.xml"  xml:base="./" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+        <xi:include href="chap5.xml"  xml:base="./" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    </part>
+</book>

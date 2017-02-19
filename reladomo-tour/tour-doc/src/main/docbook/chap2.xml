@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+
+<chapter label="2">
+    <title>Wiring A Reladomo Application</title>
+    <sect1>
+            <title>Introduction</title>
+            <para>This chapter demonstrates how to initialize Reladomo in an application.</para>
+    </sect1>
+    <sect1>
+        <title>Connection Manager</title>
+        <para>
+            Clearly, an application that persists to a database needs a mechanism to acquire a database connection.
+            The job of acquiring a connection is delegated to a connection manager class. Reladomo is not opinionated about how the connection is obtained as long as the connection is associated with a database transaction.
+        </para>
+        <sect2>
+            <title>Sourceless Connection Manager</title>
+            <para>
+                The <code>SourceLessConnectionManager</code> is used when all Reladomo objects are persisted in a single database.
+                In other words, if all objects come from a single source database, use a <code>SourceLessConnectionManager</code>.
+            </para>
+            <para>
+                The snippet below shows a simple implementation that uses a direct host/port connection to the database.
+                It also uses a Reladomo utility class, <code>XAConnectionManager</code> to acquire a transactional database connection.
+            </para>
+            <programlisting language="java"><![CDATA[
+public class BankConnectionManager implements SourcelessConnectionManager
+{
+    private XAConnectionManager xaConnectionManager;
+
+    protected SimpleBankConnectionManager() {
+        this.createConnectionManager();
+    }
+
+    private void createConnectionManager() {
+        this.xaConnectionManager = new XAConnectionManager();
+        xaConnectionManager.setDriverClassName("com.ibm.db2.jcc.DB2Driver");
+        xaConnectionManager.setHostName("my.db.host");
+        xaConnectionManager.setPort(12345);
+        xaConnectionManager.setJdbcUser("user1");
+        xaConnectionManager.setJdbcPassword("password1");
+        xaConnectionManager.setMaxWait(500);
+        xaConnectionManager.setPoolName("pet store connection pool");
+        xaConnectionManager.setPoolSize(10);
+        xaConnectionManager.setInitialSize(1);
+        xaConnectionManager.initialisePool();
+    }
+
+    @Override
+    public Connection getConnection() {
+        return xaConnectionManager.getConnection();
+    }
+
+    @Override
+    public DatabaseType getDatabaseType() {
+        return Udb82DatabaseType.getInstance();
+    }
+
+    @Override
+    public TimeZone getDatabaseTimeZone() {
+        return TimeZone.getTimeZone("America/New York");
+    }
+
+    @Override
+    public String getDatabaseIdentifier() {
+        //this has to be a string that uniquely identifies the database from which the connection is acquired
+        return xaConnectionManager.getHostName() + ":" + xaConnectionManager.getPort();
+    }
+
+    @Override
+    public BulkLoader createBulkLoader() throws BulkLoaderException {
+        return null;
+    }
+}]]>
+            </programlisting>
+        </sect2>
+        <sect2>
+            <title>Source Connection Manager</title>
+            <para>
+                In some cases, Reladomo objects come from multiple source databases. One common case where this can happen is if the database is sharded.
+                In this case, the connection manager's job is to return a shard specific database connection.
+            </para>
+            <para>
+                Sharding is discussed in more detail in a later chapter.
+            </para>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Runtime Configuration</title>
+        <para>.
+            Reladomo's runtime is configured via a <code>MithraRuntime</code> XML file. This is similar to the <code>MithraClassList</code> in that it lists all the <code>MithraObject</code>s that
+            are being used by the application. It is different in that it specifies runtime concerns such as connection management and caching. The connection manager class to be used is indicated via the <code>ConnectionManager</code> XML tag.
+        </para>
+        <para>
+            The following snippet shows a runtime configuration where all the objects are partially cached. This means that Reladomo will cache an object as long as there is sufficient memory. When there is a memory crunch, the cached objects will be garbage collected.
+        </para>
+        <programlisting language="xml"><![CDATA[
+<MithraRuntime>
+    <ConnectionManager className="simplebank.util.BankConnectionManager">
+        <MithraObjectConfiguration className="simplebank.domain.Customer" cacheType="partial" />
+        <MithraObjectConfiguration className="simplebank.domain.CustomerAccount" cacheType="partial" />
+    </ConnectionManager>
+</MithraRuntime>]]>
+        </programlisting>
+    </sect1>
+    <sect1>
+        <title>Wiring it all together</title>
+        <para>
+            With the connection manager and runtime configuration ready, we can initialize Reladomo by initializing the <code>MithraManager</code>.
+            As the name suggests, this class manages all Reladomo operations.
+        </para>
+        <programlisting language="java"><![CDATA[
+public class SimpleBankApp {
+    public static void main(String[] args) throws Exception {
+        new SimpleBankApp().start();
+    }
+
+    public SimpleBankApp() throws Exception {
+        this.initReladomo();
+    }
+
+    private void initReladomo() throws Exception {
+        MithraManager mithraManager = MithraManagerProvider.getMithraManager();
+        mithraManager.setTransactionTimeout(60 * 1000);
+        loadReladomoXML("SimpleBankRuntimeConfiguration.xml");
+    }
+
+    private void loadReladomoXML(String fileName) throws Exception
+    {
+        InputStream stream = SimpleBankApp.class.getClassLoader().getResourceAsStream(fileName);
+        if (stream == null) {
+            throw new Exception("Failed to locate " + fileName + " in c;asspath");
+        }
+        MithraManagerProvider.getMithraManager().readConfiguration(stream);
+        stream.close();
+    }
+
+    private void start() {
+        //implement app logic
+    }
+}]]>
+        </programlisting>
+        <para>
+            This simple application does not do anything useful other than initializing Reladomo. In the next chapter, we will extend this application to build a simple REST API for the Petstore.
+        </para>
+    </sect1>
+</chapter>

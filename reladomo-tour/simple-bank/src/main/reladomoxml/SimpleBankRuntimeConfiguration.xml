@@ -1,0 +1,8 @@
+<MithraRuntime  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="mithraruntime.xsd">
+    <ConnectionManager className="simplebank.util.BankConnectionManager">
+        <MithraObjectConfiguration className="simplebank.domain.Person" cacheType="partial" />
+        <MithraObjectConfiguration className="simplebank.domain.Pet" cacheType="partial" />
+        <MithraObjectConfiguration className="simplebank.domain.PetType" cacheType="partial" />
+    </ConnectionManager>
+</MithraRuntime>

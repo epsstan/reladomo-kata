@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+
+<chapter label="5">
+    <title>Testing With Reladomo</title>
+    <sect1>
+        <title>Introduction</title>
+        <para>
+            One of the features that distinguishes Reladomo from other ORM frameworks is its first class
+            support for testing. This chapter shows how you can write simple and fast tests for a Reladomo
+            application.
+        </para>
+        <para>Reladomo's testing philosophy is very simple. You should be able to test your application
+        without the usual ceremony of mocks and other test helpers. To that end, Reladomo facilitates
+        testing by starting and populating an in-memory H2 database with test data. All of you have to do is
+        to point your application against this in-memory database and exercise your
+            application's API/interface.</para>
+    </sect1>
+    <sect1>
+        <title>Testing In Action</title>
+        <sect2>
+            <title>Connection Manager</title>
+            <para>
+                Chapter 2 introduced the <code>ConnectionManager</code> which is responsible for obtaining
+                a database connection. Since we are going to be connecting to an in-memory test database,
+                we cannot simply use the same connection manager as we would in production.
+            </para>
+            <para>
+                Instead we use the <code>com.gs.fw.common.mithra.test.ConnectionManagerForTests</code> that
+                ships with the Mithra test jars. This class is a convenience class with factory methods for
+                creating a connection manager. You don't have to do much other than using this class.
+            </para>
+        </sect2>
+        <sect2>
+            <title>Runtime Configuration</title>
+            <para>
+                Chapter 2 introduced the <code>MithraRuntime</code> XML file. This file ties together the
+                various Reladomo domain model classes along with the <code>ConnectionManager</code> to be used
+                to fetch and persist these objects.
+            </para>
+            <para>
+                The <code>MithraRuntime</code> XML for testing differs from production in two ways. First,
+                it uses <code>com.gs.fw.common.mithra.test.ConnectionManagerForTests</code>. Second, it has
+                an extra <code>Property</code> tag. This tag is used to simulate multiple databases in the same in-memory
+                H2 database server.
+            </para>
+            <para>
+                The snippet below shows a testing <code>MithraRuntime</code> with entities being loaded from two
+                databases.
+            </para>
+            <programlisting><![CDATA[
+<MithraRuntime>
+    <ConnectionManager className="com.gs.fw.common.mithra.test.ConnectionManagerForTests">
+        <Property name="resourceName" value="test_db"/>
+        <MithraObjectConfiguration className="com.gs.fw.myapp.Foo" cacheType="partial"/>
+        <MithraObjectConfiguration className="com.gs.fw.myapp.Bar" cacheType="partial"/>
+        ...
+    </ConnectionManager>
+    <ConnectionManager className="com.gs.fw.common.mithra.test.ConnectionManagerForTests">
+        <Property name="resourceName" value="desk_db"/>
+        <MithraObjectConfiguration className="com.gs.fw.myapp.Product" cacheType="partial"/>
+        <MithraObjectConfiguration className="com.gs.fw.myapp.Account" cacheType="partial"/>
+        ...
+    </ConnectionManager>
+ </MithraRuntime>
+            ]]>
+            </programlisting>
+            <para>
+                The snippet below shows the <code>SimpleBankTestRuntimeConfiguration</code> XML in its entirety.
+            </para>
+            <programlisting><![CDATA[
+<MithraRuntime
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="mithraruntime.xsd">
+    <ConnectionManager className="com.gs.fw.common.mithra.test.ConnectionManagerForTests">
+        <Property name="testResource" value="mithra_db"/>
+        <MithraObjectConfiguration cacheType="partial" className="simplebank.domain.Customer"/>
+        <MithraObjectConfiguration cacheType="partial" className="simplebank.domain.CustomerAccount"/>
+    </ConnectionManager>
+</MithraRuntime>
+            ]]>
+            </programlisting>
+        </sect2>
+        <sect2>
+            <title>Test Data</title>
+            <para>
+                Reladomo will not only start a in-memory H2 database, but also populate it with data.
+                All you have to do is provide a test data file. The following snippet describes the data file's format.
+            </para>
+            <programlisting><![CDATA[
+class <classname>
+<attribute name 1>, <attribute name 2>... <attribute name N>
+<value 1, 1>, <value 1, 2> ... <value 1, N>
+<value 2, 1>, <value 2, 2> ... <value 2, N>
+...
+...
+<value M, 1>, <value M, 2> ... <value M, N>
+            ]]>
+            </programlisting>
+            <para>
+                The snippet below shows the <code>SimpleBankTestData.txt</code> file that will be used
+                to test the REST API we built in chapter 4.
+            </para>
+            <programlisting><![CDATA[
+class simplebank.domain.Customer
+customerId, firstName, lastName, country
+1, "mickey", "mouse", "USA"
+2, "minnie", "mouse", "USA"
+3, "peter", "pan", "Neverland"
+
+class simplebank.domain.CustomerAccount
+accountId, customerId, accountName, accountType, balance
+100, 1, "mickey mouse club", "savings", 5000
+101, 2, "retirement", "savings", 10000
+102, 3, "fun stuff", "checking", 3000
+            ]]>
+            </programlisting>
+        </sect2>
+        <sect2>
+            <title>Test Resource</title>
+            <para>
+                The <code>MithraTestResource</code> wires everything together. It is used  to load
+                the <code>MithraClassList</code>, and initializes the test database with test data.
+                The following is a snippet from <code>SimpleBankAPITest</code>, showing a complete test.
+            </para>
+            <programlisting><![CDATA[
+public class SimpleBankAPITest
+{
+    private String testRuntimeConfigXML = "testconfig/SimpleBankTestRuntimeConfiguration.xml";
+
+    @Before
+    public void setup() throws Exception
+    {
+        intializeReladomoForTest();
+        initializeApp();
+    }
+
+    private void intializeReladomoForTest()
+    {
+        MithraTestResource testResource = new MithraTestResource(testRuntimeConfigXML);
+        ConnectionManagerForTests connectionManager = ConnectionManagerForTests.getInstance("test_db");
+        testResource.createSingleDatabase(connectionManager, "testconfig/SimpleBankTestData.txt");
+        testResource.setUp();
+    }
+
+    private void initializeApp() throws Exception
+    {
+        new SimpleBankServer(testRuntimeConfigXML).start();
+    }
+
+    @Test
+    public void testGetCustomer()
+    {
+        WebTarget target = webTarget("/api/customer/1");
+        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        Customer mickey = response.readEntity(Customer.class);
+        assertEquals(1, mickey.getCustomerId());
+        assertEquals("mickey", mickey.getFirstName());
+        assertEquals("mouse", mickey.getLastName());
+
+        CustomerAccountList mickeysAccounts = mickey.getAccounts();
+        assertEquals(1, mickeysAccounts.size());
+        CustomerAccount clubhouseAccount = mickeysAccounts.get(0);
+        assertEquals(100, clubhouseAccount.getAccountId());
+        assertEquals("mickey mouse club", clubhouseAccount.getAccountName());
+        assertEquals("savings", clubhouseAccount.getAccountType());
+        assertEquals(5000, clubhouseAccount.getBalance(), 0);
+    }
+
+    private WebTarget webTarget(String path) {
+        Client client = ClientBuilder.newClient();
+        client.register(JacksonFeature.class);
+        client.register(JacksonObjectMapperProvider.class);
+        return client.target("http://localhost:9998").path(path);
+    }
+}            ]]></programlisting>
+        </sect2>
+    </sect1>
+</chapter>
