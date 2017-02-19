@@ -1,8 +1,0 @@
-<MithraRuntime  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:noNamespaceSchemaLocation="mithraruntime.xsd">
-    <ConnectionManager className="petstore.ch2.util.PetstoreConnectionManager">
-        <MithraObjectConfiguration className="petstore.ch2.Person" cacheType="partial" />
-        <MithraObjectConfiguration className="petstore.ch2.Pet" cacheType="partial" />
-        <MithraObjectConfiguration className="petstore.ch2.PetType" cacheType="partial" />
-    </ConnectionManager>
-</MithraRuntime>

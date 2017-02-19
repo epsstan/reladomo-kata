@@ -1,6 +1,0 @@
-alter table PET add constraint PET_PK primary key (PET_NAME);
-
-create index PET_IDX0 on PET(PERSON_ID);
-
-create index PET_IDX1 on PET(PET_TYPE_ID);
-
