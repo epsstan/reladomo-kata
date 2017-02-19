@@ -9,9 +9,9 @@
         any history.
     </para>
     <sect1>
-        <title>Slow Bank</title>
+        <title>Motivating Example - The SlowBank</title>
         <para>
-            Consider the case of the "Slow Bank".
+            Consider the case of the "SlowBank".
             The bank has several ATMs but the ATM's connectivity to the bank's backend systems is flaky.
             When an ATM is not able to communicate with the bank's backend, ATM transactions are recorded
             locally. Later someone is sent to fetch these local transactions which are manually applied to the
@@ -69,9 +69,6 @@
                 </itemizedlist>
                 The table looks as follows. (The 'Row Number' column provides an easy way to refer to rows in this document. It is not part of the table schema.)
                 <table frame='all'>
-                    <!--
-                    <title>Sample CALS Table</title>
-                    -->
                     <tgroup cols='6' align='left' colsep='1' rowsep='1'>
                         <colspec colname='c1'/>
                         <colspec colname='c2'/>
@@ -120,6 +117,359 @@
                     </listitem>
                 </itemizedlist>
             </para>
+        </sect2>
+        <sect2>
+            <title>Jan 2 - Deposit $200</title>
+            <para>
+                The next day, on Jan 2 you deposit $200 at one of the ATMs.
+            </para>
+            <para>
+                The goal of bitemporal milestoning is to track changes along both dimensions. So the bank cannot simply update the balance in Row 1. They cannot delete Row 1 and insert a new row either as that loses history.
+            </para>
+            <para>
+                In general, making changes to a bitemporally chained database is a two step process :
+
+                <itemizedlist>
+                    <listitem>
+                        <para>Invalidate rows whose view of the world is incorrect
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>Add new rows to reflect the new view of the world
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+            <sect3>
+                <title>Invalidating Rows</title>
+                <para>
+                    Row 1 currently states that the balance is $0 from Jan 1 to Infinity. This is not true anymore as the bank just accepted a $200 deposit on Jan 2. So we invalidate Row 1 by setting its OUT_Z to today (Jan 2).
+                </para>
+                <table frame='all'>
+                    <tgroup cols='6' align='left' colsep='1' rowsep='1'>
+                        <colspec colname='c1'/>
+                        <colspec colname='c2'/>
+                        <colspec colname='c3'/>
+                        <colspec colname='c4'/>
+                        <colspec colname='c5'/>
+                        <colspec colname='c6'/>
+                        <thead>
+                            <row>
+                                <entry>Account #</entry>
+                                <entry>Balance</entry>
+                                <entry>FROM_Z</entry>
+                                <entry>THRU_Z</entry>
+                                <entry>IN_Z</entry>
+                                <entry>OUT_Z</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>1</entry>
+                                <entry>100</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Infinity</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Jan 2</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </sect3>
+            <sect3>
+                <title>Adding new rows</title>
+                <para>
+                    So we add Rows 2 and 3 to capture these facts. The IN_Z and OUT_Z of these rows captures the fact that these chages were made today and that these rows represent the latest state of the account (i.e OUT_Z is Infinity)
+                </para>
+                <table frame='all'>
+                    <tgroup cols='6' align='left' colsep='1' rowsep='1'>
+                        <colspec colname='c1'/>
+                        <colspec colname='c2'/>
+                        <colspec colname='c3'/>
+                        <colspec colname='c4'/>
+                        <colspec colname='c5'/>
+                        <colspec colname='c6'/>
+                        <thead>
+                            <row>
+                                <entry>Account #</entry>
+                                <entry>Balance</entry>
+                                <entry>FROM_Z</entry>
+                                <entry>THRU_Z</entry>
+                                <entry>IN_Z</entry>
+                                <entry>OUT_Z</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>1</entry>
+                                <entry>100</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Infinity</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Jan 2</entry>
+                            </row>
+                            <row>
+                                <entry>1</entry>
+                                <entry>100</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Infinity</entry>
+                            </row>
+                            <row>
+                                <entry>1</entry>
+                                <entry>300</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Infinity</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Infinity</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </sect3>
+        </sect2>
+        <sect2>
+            <title>Jan 12 - Deposit $50</title>
+            <para>
+                Ten days later on Jan 12 you deposit $50. Because of a flaky connection to the bank,
+                the ATM does not send your deposit to the bank right away. While you walk away thinking your account has $350, your account actually has only $300.
+            </para>
+            <table frame='all'>
+                <tgroup cols='6' align='left' colsep='1' rowsep='1'>
+                    <colspec colname='c1'/>
+                    <colspec colname='c2'/>
+                    <colspec colname='c3'/>
+                    <colspec colname='c4'/>
+                    <colspec colname='c5'/>
+                    <colspec colname='c6'/>
+                    <thead>
+                        <row>
+                            <entry>Account #</entry>
+                            <entry>Balance</entry>
+                            <entry>FROM_Z</entry>
+                            <entry>THRU_Z</entry>
+                            <entry>IN_Z</entry>
+                            <entry>OUT_Z</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>1</entry>
+                            <entry>100</entry>
+                            <entry>Jan 1</entry>
+                            <entry>Infinity</entry>
+                            <entry>Jan 1</entry>
+                            <entry>Jan 2</entry>
+                        </row>
+                        <row>
+                            <entry>1</entry>
+                            <entry>100</entry>
+                            <entry>Jan 1</entry>
+                            <entry>Jan 2</entry>
+                            <entry>Jan 2</entry>
+                            <entry>Infinity</entry>
+                        </row>
+                        <row>
+                            <entry>1</entry>
+                            <entry>300</entry>
+                            <entry>Jan 2</entry>
+                            <entry>Infinity</entry>
+                            <entry>Jan 2</entry>
+                            <entry>Infinity</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </sect2>
+        <sect2>
+            <title>Jan 17 - You notice your balance is incorrect.</title>
+            <para>
+                Five days later on Jan 17, you check your bank account online and realize the mistake. Your account is short by $50. Furious, you call the bank to complain. They are vey apologetic and agree to adjust your balance.
+            </para>
+            <para>
+                Just as before, the bank wants to preserve history in both dimensions. They follow the same approach :
+                <itemizedlist>
+                    <listitem>
+                        <para>
+                            Invalidate rows whose view of the world is incorrect
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Add new rows to reflect the new view of the world
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+            <sect3>
+                <title>Invalidate rows</title>
+                <para>
+                    Row 1 is already invalid. It does not need to be updated.
+                </para>
+                <para>
+                    Rows 2 and 3 are invalid along the processing time dimension. However, we want to preserve the fact that they are invalid. So we invalidate them by setting their OUT_Z to today (Jan 17).
+                </para>
+                <table frame='all'>
+                    <tgroup cols='6' align='left' colsep='1' rowsep='1'>
+                        <colspec colname='c1'/>
+                        <colspec colname='c2'/>
+                        <colspec colname='c3'/>
+                        <colspec colname='c4'/>
+                        <colspec colname='c5'/>
+                        <colspec colname='c6'/>
+                        <thead>
+                            <row>
+                                <entry>Account #</entry>
+                                <entry>Balance</entry>
+                                <entry>FROM_Z</entry>
+                                <entry>THRU_Z</entry>
+                                <entry>IN_Z</entry>
+                                <entry>OUT_Z</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>1</entry>
+                                <entry>100</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Infinity</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Jan 2</entry>
+                            </row>
+                            <row>
+                                <entry>1</entry>
+                                <entry>100</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Jan 17</entry>
+                            </row>
+                            <row>
+                                <entry>1</entry>
+                                <entry>300</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Infinity</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Jan 17</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </sect3>
+            <sect3>
+                <title>
+                    Add new rows
+                </title>
+                <para>
+                    Our new view of the world is as follows :
+                    <itemizedlist>
+                        <listitem>
+                            <para>
+                                From Jan 1 to Jan 2, balance = $100 (opening balance)
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                From Jan 2 to Jan 12, balance = $300 (opening balance + deposit of $200 on Jan 2)
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                From Jan 12 to Infinity, balance = $350 (opening balance + deposit of $200 on Jan 2 + deposit of $50 on Jan 12)
+                            </para>
+                        </listitem>
+                    </itemizedlist>
+                    Since we are adding these rows today (Jan 17), the IN_Z of these newly added rows = Jan 17.
+                </para>
+                <table frame='all'>
+                    <tgroup cols='6' align='left' colsep='1' rowsep='1'>
+                        <colspec colname='c1'/>
+                        <colspec colname='c2'/>
+                        <colspec colname='c3'/>
+                        <colspec colname='c4'/>
+                        <colspec colname='c5'/>
+                        <colspec colname='c6'/>
+                        <thead>
+                            <row>
+                                <entry>Account #</entry>
+                                <entry>Balance</entry>
+                                <entry>FROM_Z</entry>
+                                <entry>THRU_Z</entry>
+                                <entry>IN_Z</entry>
+                                <entry>OUT_Z</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>1</entry>
+                                <entry>100</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Infinity</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Jan 2</entry>
+                            </row>
+                            <row>
+                                <entry>1</entry>
+                                <entry>100</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Jan 17</entry>
+                            </row>
+                            <row>
+                                <entry>1</entry>
+                                <entry>300</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Infinity</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Jan 17</entry>
+                            </row>
+                            <row>
+                                <entry>1</entry>
+                                <entry>100</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Jan 17</entry>
+                                <entry>Infinity</entry>
+                            </row>
+                            <row>
+                                <entry>1</entry>
+                                <entry>300</entry>
+                                <entry>Jan 2</entry>
+                                <entry>Jan 12</entry>
+                                <entry>Jan 17</entry>
+                                <entry>Infinity</entry>
+                            </row>
+                            <row>
+                                <entry>1</entry>
+                                <entry>350</entry>
+                                <entry>Jan 17</entry>
+                                <entry>Infinity</entry>
+                                <entry>Jan 17</entry>
+                                <entry>Infinity</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </sect3>
+            <sect3>
+                <title>Visualizaing Bitemporal Chaining</title>
+                <para>
+                    It is very helpful to visualize the history of changes in a two dimensional chart. The following figure contains three charts showing how the table changes over time.
+                </para>
+                <para>
+                    Each colored (and numbered) rectangle corresponds to a row in the database. Even though the graphs are not drawn to scale, it is clear that each change does not destory history (i.e each change only introduces more rectangles).
+                </para>
+                <figure id="visualization.fig">
+                    <title>Progression of bitemporal chaining</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="chap6/visualization.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+            </sect3>
         </sect2>
     </sect1>
 </chapter>
