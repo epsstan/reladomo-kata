@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+
+<chapter label="6">
+    <title>Bitemporal Chaining</title>
+    <para>
+        This chapter introduces the concept of bitemporal chaining for
+        relational databases. Using the example of a bank account, it shows
+        how by using bitemporal chaining, it is easy to make corrections to historical data without losing
+        any history.
+    </para>
+    <sect1>
+        <title>Slow Bank</title>
+        <para>
+            Consider the case of the "Slow Bank".
+            The bank has several ATMs but the ATM's connectivity to the bank's backend systems is flaky.
+            When an ATM is not able to communicate with the bank's backend, ATM transactions are recorded
+            locally. Later someone is sent to fetch these local transactions which are manually applied to the
+            bank's database.
+        </para>
+        <para>
+            This delay in updating the bank's database means that your bank balance is not always upto date.
+            Sometimes the bank says you have less money than you actually have ; sometimes it says you have more money than you actually have!
+            All of this is very frustrating. But the bank happily adjusts your balance everytime you report a discrepancy.
+        </para>
+        <para>
+            However, the bank has a new problem. They have been manually adjusting the balance so many times, that they are completely unable to reason about your account's history.
+            Lucikly, they have learnt about bitemporal chaining that will help them fix these problems.
+        </para>
+    </sect1>
+    <sect1>
+        <title>
+            Bitemporal Chaining
+        </title>
+        <para>
+            In bitemporal chaining, all changes to a database are tracked along two dimensions.
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Processing Time - This is when the change actually occurred in the world
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Transaction Time - This is when the change actually was recorded in the database
+                    </para>
+                </listitem>
+            </itemizedlist>
+            While these two times are often the same, they can be different. Consider the following example.
+        </para>
+    </sect1>
+    <sect1>
+        <title>A few days in the life of a SlowBank customer</title>
+        <sect2>
+            <title>Jan 1 - Open an account</title>
+            <para>
+                On Jan 1 you open a new bank account with a balance of $100. The bank updates it's database (table) with an entry for your account.
+                Since bitemporal chaining is being used, each row in the table has four timestamp columns:
+                <itemizedlist>
+                    <listitem>
+                        <para>
+                            FROM_Z and THRU_Z track the validity of the row along the processing time dimension
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            IN_Z and OUT_Z track the validity of the row along the transaction time dimension
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                The table looks as follows. (The 'Row Number' column provides an easy way to refer to rows in this document. It is not part of the table schema.)
+                <table frame='all'>
+                    <!--
+                    <title>Sample CALS Table</title>
+                    -->
+                    <tgroup cols='6' align='left' colsep='1' rowsep='1'>
+                        <colspec colname='c1'/>
+                        <colspec colname='c2'/>
+                        <colspec colname='c3'/>
+                        <colspec colname='c4'/>
+                        <colspec colname='c5'/>
+                        <colspec colname='c6'/>
+                        <thead>
+                            <row>
+                                <entry>Account #</entry>
+                                <entry>Balance</entry>
+                                <entry>FROM_Z</entry>
+                                <entry>THRU_Z</entry>
+                                <entry>IN_Z</entry>
+                                <entry>OUT_Z</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>1</entry>
+                                <entry>100</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Infinity</entry>
+                                <entry>Jan 1</entry>
+                                <entry>Infinity</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+                Row 1 records the following facts:
+                <itemizedlist>
+                    <listitem>
+                        <para>
+                            The account was created on today (Jan 1). So FROM_Z = Jan 1. This example will use dates (formatted as 'Jan 1' for simplicity) instead of timestamps.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            The account was added to the database today (Jan 1). So IN_Z = Jan 1
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            This is the only row for this account. And we mark these rows as valid by setting the THRU_Z and OUT_Z to Infinity. Infinity is a magic timestamp chosen such that it cannot possibly be a valid date in the system e.g. 9999/1/1.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+        </sect2>
+    </sect1>
+</chapter>

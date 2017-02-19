@@ -40,4 +40,17 @@
         <xi:include href="chap4.xml"  xml:base="./" xmlns:xi="http://www.w3.org/2001/XInclude"/>
         <xi:include href="chap5.xml"  xml:base="./" xmlns:xi="http://www.w3.org/2001/XInclude"/>
     </part>
+    <part label="II">
+        <title>Bitemporal Chaining</title>
+        <partintro>
+            <para>
+                One of the singular features of Reladomo is it's support for bitemporal chaining. This part introduces
+                the concepts behind bitemporal chaining and how it can be used.
+            </para>
+            <para>
+                The code for all the chapters in this part can be found in <code>slow-bank</code> Maven module.
+            </para>
+        </partintro>
+        <xi:include href="chap6.xml"  xml:base="./" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    </part>
 </book>
