@@ -67,7 +67,21 @@
                         </para>
                     </listitem>
                 </itemizedlist>
-                The table looks as follows. (The 'Row Number' column provides an easy way to refer to rows in this document. It is not part of the table schema.)
+                The table looks as follows. (The number in blue, to the right of every row provides an easy way to refer to rows in this document.)
+                <figure id="chaining1.fig">
+                    <title>Bank Account On Jan 1</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="chap6/chaining-1.png"/>
+                        </imageobject>
+                        <!--
+                        <textobject>
+                            <phrase>Bank Domain Model</phrase>
+                        </textobject>
+                        -->
+                    </mediaobject>
+                </figure>
+                <!--
                 <table frame='all'>
                     <tgroup cols='6' align='left' colsep='1' rowsep='1'>
                         <colspec colname='c1'/>
@@ -98,6 +112,7 @@
                         </tbody>
                     </tgroup>
                 </table>
+                -->
                 Row 1 records the following facts:
                 <itemizedlist>
                     <listitem>
@@ -128,7 +143,6 @@
             </para>
             <para>
                 In general, making changes to a bitemporally chained database is a two step process :
-
                 <itemizedlist>
                     <listitem>
                         <para>Invalidate rows whose view of the world is incorrect
@@ -145,6 +159,20 @@
                 <para>
                     Row 1 currently states that the balance is $0 from Jan 1 to Infinity. This is not true anymore as the bank just accepted a $200 deposit on Jan 2. So we invalidate Row 1 by setting its OUT_Z to today (Jan 2).
                 </para>
+                <figure id="chaining2.fig">
+                    <title>Bank Account On Jan 2 - After invalidating rows</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="chap6/chaining-2.png"/>
+                        </imageobject>
+                        <!--
+                        <textobject>
+                            <phrase>Bank Domain Model</phrase>
+                        </textobject>
+                        -->
+                    </mediaobject>
+                </figure>
+                <!--
                 <table frame='all'>
                     <tgroup cols='6' align='left' colsep='1' rowsep='1'>
                         <colspec colname='c1'/>
@@ -175,12 +203,27 @@
                         </tbody>
                     </tgroup>
                 </table>
+                -->
             </sect3>
             <sect3>
                 <title>Adding new rows</title>
                 <para>
                     So we add Rows 2 and 3 to capture these facts. The IN_Z and OUT_Z of these rows captures the fact that these chages were made today and that these rows represent the latest state of the account (i.e OUT_Z is Infinity)
                 </para>
+                <figure id="chaining3.fig">
+                    <title>Bank Account On Jan 2 - After adding new rows</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="chap6/chaining-3.png"/>
+                        </imageobject>
+                        <!--
+                        <textobject>
+                            <phrase>Bank Domain Model</phrase>
+                        </textobject>
+                        -->
+                    </mediaobject>
+                </figure>
+                <!--
                 <table frame='all'>
                     <tgroup cols='6' align='left' colsep='1' rowsep='1'>
                         <colspec colname='c1'/>
@@ -227,6 +270,7 @@
                         </tbody>
                     </tgroup>
                 </table>
+                -->
             </sect3>
         </sect2>
         <sect2>
@@ -235,6 +279,20 @@
                 Ten days later on Jan 12 you deposit $50. Because of a flaky connection to the bank,
                 the ATM does not send your deposit to the bank right away. While you walk away thinking your account has $350, your account actually has only $300.
             </para>
+            <figure id="chaining4.fig">
+                <title>Bank Account On Jan 12</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="chap6/chaining-3.png"/>
+                    </imageobject>
+                    <!--
+                    <textobject>
+                        <phrase>Bank Domain Model</phrase>
+                    </textobject>
+                    -->
+                </mediaobject>
+            </figure>
+            <!--
             <table frame='all'>
                 <tgroup cols='6' align='left' colsep='1' rowsep='1'>
                     <colspec colname='c1'/>
@@ -281,6 +339,7 @@
                     </tbody>
                 </tgroup>
             </table>
+            -->
         </sect2>
         <sect2>
             <title>Jan 17 - You notice your balance is incorrect.</title>
@@ -310,6 +369,20 @@
                 <para>
                     Rows 2 and 3 are invalid along the processing time dimension. However, we want to preserve the fact that they are invalid. So we invalidate them by setting their OUT_Z to today (Jan 17).
                 </para>
+                <figure id="chaining5.fig">
+                    <title>Bank Account On Jan 17 - After invalidating rows</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="chap6/chaining-4.png"/>
+                        </imageobject>
+                        <!--
+                        <textobject>
+                            <phrase>Bank Domain Model</phrase>
+                        </textobject>
+                        -->
+                    </mediaobject>
+                </figure>
+                <!--
                 <table frame='all'>
                     <tgroup cols='6' align='left' colsep='1' rowsep='1'>
                         <colspec colname='c1'/>
@@ -356,6 +429,7 @@
                         </tbody>
                     </tgroup>
                 </table>
+                -->
             </sect3>
             <sect3>
                 <title>
@@ -382,6 +456,20 @@
                     </itemizedlist>
                     Since we are adding these rows today (Jan 17), the IN_Z of these newly added rows = Jan 17.
                 </para>
+                <figure id="chaining6.fig">
+                    <title>Bank Account On Jan 17 - After adding new rows</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="chap6/chaining-5.png"/>
+                        </imageobject>
+                        <!--
+                        <textobject>
+                            <phrase>Bank Domain Model</phrase>
+                        </textobject>
+                        -->
+                    </mediaobject>
+                </figure>
+                <!--
                 <table frame='all'>
                     <tgroup cols='6' align='left' colsep='1' rowsep='1'>
                         <colspec colname='c1'/>
@@ -452,6 +540,7 @@
                         </tbody>
                     </tgroup>
                 </table>
+                -->
             </sect3>
             <sect3>
                 <title>Visualizaing Bitemporal Chaining</title>

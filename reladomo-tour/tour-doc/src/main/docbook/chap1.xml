@@ -14,11 +14,11 @@
             Consider a backend application for a bank. A simple domain model of this application can be
             expressed in UML as follows.
         </para>
-        <figure id="domainmodel.fig">
-            <title>Domain Model - TODO : Change png</title>
+        <figure id="domainmodel.fig" float="true">
+            <title>Domain Model</title>
             <mediaobject>
                 <imageobject>
-                    <imagedata fileref="chap1/Petstore_ClassDiagram.png" scale="75"/>
+                    <imagedata fileref="chap1/SimpleBank_ClassDiagram.png" scale="75"/>
                 </imageobject>
                 <textobject>
                     <phrase>Bank Domain Model</phrase>
@@ -203,16 +203,14 @@
             Because you could have custom business logic in these classes, the code generator will not re-generate these classes if they already exist in the target directory.
         </para>
         <para>
-            <inlinemediaobject>
+            <figure id="generated.fig" float="true">
+            <title>Simple Bank - Generated Classes</title>
+            <mediaobject>
                 <imageobject>
-                    <imagedata scale="50" fileref="chap1/Petstore_generated1.png"/>
+                    <imagedata fileref="chap1/SimpleBank-generated-nongenerated.png" />
                 </imageobject>
-            </inlinemediaobject>
-            <inlinemediaobject>
-                <imageobject>
-                    <imagedata scale="50" fileref="chap1/Petstore_generated2.png"/>
-                </imageobject>
-            </inlinemediaobject>
+            </mediaobject>
+            </figure>
             <!--
             <table frame="none">
                 <title>Reladomo Generated Classes</title>
@@ -279,14 +277,11 @@
             contain the statements for creating indices and foreign keys.
         </para>
         <figure id="ddl.fig">
-            <title>Generated DDL - TODO </title>
+            <title>Simple Bank - Generated DDL</title>
             <mediaobject>
                 <imageobject>
-                    <imagedata fileref="chap1/Petstore_generatedddl.png" scale="50"/>
+                    <imagedata fileref="chap1/SimpleBank_GeneratedDdl.png"/>
                 </imageobject>
-                <textobject>
-                    <phrase>Bank Generated DDL</phrase>
-                </textobject>
             </mediaobject>
         </figure>
         <note>
